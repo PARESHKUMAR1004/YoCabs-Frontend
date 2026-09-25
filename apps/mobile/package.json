@@ -12,8 +12,7 @@
     "bundle:android": "expo export --platform android --output-dir dist"
   },
   "dependencies": {
-    "@expo-google-fonts/inter": "^0.4.2",
-    "@expo-google-fonts/playfair-display": "^0.4.2",
+    "@expo-google-fonts/manrope": "^0.4.2",
     "@expo/vector-icons": "^15.0.0",
     "@hookform/resolvers": "^5.9.1",
     "@react-native-community/datetimepicker": "9.1.0",

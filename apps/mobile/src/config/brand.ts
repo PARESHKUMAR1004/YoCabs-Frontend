@@ -42,17 +42,17 @@ export const radius = { sm: 10, md: 14, lg: 20, xl: 28, pill: 999 } as const;
 
 /** Font family names as registered in the root layout (one family per weight on Android). */
 export const fonts = {
-  display: 'PlayfairDisplay_700Bold',
-  displaySemi: 'PlayfairDisplay_600SemiBold',
-  body: 'Inter_400Regular',
-  medium: 'Inter_500Medium',
-  semibold: 'Inter_600SemiBold',
-  bold: 'Inter_700Bold',
+  display: 'Manrope_800ExtraBold',
+  displaySemi: 'Manrope_700Bold',
+  body: 'Manrope_400Regular',
+  medium: 'Manrope_500Medium',
+  semibold: 'Manrope_600SemiBold',
+  bold: 'Manrope_700Bold',
 } as const;
 
 export const typography = {
-  title: { fontFamily: fonts.display, fontSize: 28, lineHeight: 35, letterSpacing: -0.3 },
-  heading: { fontFamily: fonts.displaySemi, fontSize: 20, lineHeight: 27 },
+  title: { fontFamily: fonts.display, fontSize: 27, lineHeight: 34, letterSpacing: -0.5 },
+  heading: { fontFamily: fonts.displaySemi, fontSize: 19, lineHeight: 26, letterSpacing: -0.2 },
   subheading: { fontFamily: fonts.semibold, fontSize: 16, lineHeight: 22 },
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22 },
   caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0.2 },
