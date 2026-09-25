@@ -1,6 +1,6 @@
 import { router, type Href } from 'expo-router';
-import { StyleSheet } from 'react-native';
-import { spacing } from '@/config/brand';
+import { StyleSheet, View } from 'react-native';
+import { colors, fonts, radius, spacing } from '@/config/brand';
 import { signOut } from '@/shared/auth/session';
 import { AppText, Button, Card, KeyValue, QueryBoundary, Screen, Spacer } from '@/shared/ui';
 import { confirmAction } from '@/shared/utils/feedback';
@@ -36,9 +36,19 @@ export function ProfileScreen({ editRoute, supportRoute, extra }: Props) {
     <QueryBoundary query={query}>
       {(profile) => (
         <Screen refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
-          <AppText variant="title">{profile.displayName ?? 'Your profile'}</AppText>
-          <AppText color="textMuted">{humanize(profile.role)}</AppText>
-          <Spacer />
+          <View style={styles.identity}>
+            <View style={styles.avatar}>
+              <AppText style={styles.initial}>
+                {(profile.displayName ?? profile.mobile ?? '?').charAt(0).toUpperCase()}
+              </AppText>
+            </View>
+            <AppText variant="heading" color="textOnPrimary">
+              {profile.displayName ?? 'Your profile'}
+            </AppText>
+            <AppText variant="caption" color="primary" style={styles.role}>
+              {humanize(profile.role)}
+            </AppText>
+          </View>
           <Card>
             <KeyValue label="Mobile" value={formatMobile(profile.mobile)} />
             <KeyValue label="Email" value={profile.email ?? 'Not added'} />
@@ -67,4 +77,23 @@ export function ProfileScreen({ editRoute, supportRoute, extra }: Props) {
 
 const styles = StyleSheet.create({
   signOut: { marginTop: spacing.lg },
+  identity: {
+    alignItems: 'center',
+    backgroundColor: colors.ink,
+    borderRadius: radius.xl,
+    padding: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.pill,
+    borderWidth: 1,
+    borderColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.md,
+  },
+  initial: { fontFamily: fonts.display, fontSize: 30, lineHeight: 38, color: colors.primary },
+  role: { textTransform: 'uppercase', letterSpacing: 2, marginTop: spacing.xs },
 });

@@ -100,10 +100,7 @@ export default function OptionDetails() {
         </>
       ) : null}
 
-      <SectionHeader title="Fare" />
-      <Card>
-        <FareTotal total={option.price.totalAmount} currency={option.price.currency} />
-      </Card>
+      <FareTotal total={option.price.totalAmount} currency={option.price.currency} />
       <AppText variant="small" color="textMuted">
         You pay only a small token now to confirm. You will not be charged until you confirm the
         booking.

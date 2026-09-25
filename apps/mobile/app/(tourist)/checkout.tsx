@@ -67,18 +67,17 @@ export default function Checkout() {
         </AppText>
       </Card>
 
-      <SectionHeader title="Fare" />
-      <Card>
-        <FareTotal total={option.price.totalAmount} currency={currency} label="Listed fare" />
-        {agreed !== null ? (
-          <>
-            <KeyValue label="Negotiated price" value={formatMoney(agreed, currency)} emphasise />
-            <AppText variant="small" color="success">
-              You save {formatMoney(option.price.totalAmount - agreed, currency)}.
-            </AppText>
-          </>
-        ) : null}
-      </Card>
+      <FareTotal
+        total={agreed ?? option.price.totalAmount}
+        currency={currency}
+        label={agreed !== null ? 'Your negotiated fare' : 'Total fare'}
+      />
+      {agreed !== null ? (
+        <AppText variant="small" color="success" style={styles.note}>
+          You save {formatMoney(option.price.totalAmount - agreed, currency)} on the listed fare of{' '}
+          {formatMoney(option.price.totalAmount, currency)}.
+        </AppText>
+      ) : null}
 
       <AppText variant="small" color="textMuted" style={styles.note}>
         Next you pay a {brand.tokenPercentDescription} booking token to confirm. The rest is due

@@ -108,8 +108,8 @@ export default function BookingDetail() {
           ) : null}
 
           <SectionHeader title="Fare" />
+          <FareTotal total={booking.totalAmount} currency={booking.currency} />
           <Card>
-            <FareTotal total={booking.totalAmount} currency={booking.currency} />
             <KeyValue
               label="Token paid online"
               value={formatMoney(booking.tokenAmount, booking.currency)}

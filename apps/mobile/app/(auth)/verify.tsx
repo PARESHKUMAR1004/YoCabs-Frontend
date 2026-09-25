@@ -8,7 +8,7 @@ import { signOut } from '@/shared/auth/session';
 import { appRoleOf, homeRouteFor, useSessionStore } from '@/shared/auth/session.store';
 import { env } from '@/config/env';
 import { useCountdown } from '@/shared/hooks/useCountdown';
-import { AppText, Button, FormTextField, Screen, Spacer } from '@/shared/ui';
+import { AppText, Button, FormTextField, Heading, Screen, Spacer } from '@/shared/ui';
 import { formatMobile } from '@/shared/utils/format';
 import { showError, showInfo } from '@/shared/utils/feedback';
 
@@ -59,9 +59,11 @@ export default function Verify() {
         />
       }
     >
-      <AppText variant="title">Enter the code</AppText>
-      <AppText color="textMuted">We sent a 6-digit code to {formatMobile(mobile)}.</AppText>
-      <Spacer size="xl" />
+      <Heading
+        eyebrow="Verify"
+        title="Enter the code"
+        subtitle={`We sent a 6-digit code to ${formatMobile(mobile)}.`}
+      />
       <FormTextField
         control={control}
         name="code"

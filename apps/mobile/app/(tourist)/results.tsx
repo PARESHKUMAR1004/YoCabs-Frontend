@@ -2,14 +2,14 @@ import { useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useShallow } from 'zustand/react/shallow';
-import { spacing } from '@/config/brand';
+import { colors, radius, spacing } from '@/config/brand';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { useTripSearch } from '@/features/tourist/hooks';
 import { OptionCard } from '@/features/tourist/OptionCard';
 import { toSearchRequest, validateDraft } from '@/features/tourist/searchDraft';
 import { selectDraft, useSearchStore } from '@/features/tourist/searchStore';
 import { sortOptions, type SortMode } from '@/features/tourist/sortOptions';
-import { AppText, Button, Card, ChoiceChips, EmptyState, QueryBoundary, Row } from '@/shared/ui';
+import { AppText, Button, ChoiceChips, EmptyState, QueryBoundary, Row } from '@/shared/ui';
 import { formatDateRange, formatDistance, formatDuration } from '@/shared/utils/format';
 
 const SORTS: { value: SortMode; label: string }[] = [
@@ -63,19 +63,19 @@ export default function Results() {
           onRefresh={() => void query.refetch()}
           ListHeaderComponent={
             <View>
-              <Card>
-                <AppText variant="subheading">
-                  {draft.pickup?.name} to {draft.destination?.name}
+              <View style={styles.trip}>
+                <AppText variant="heading" color="textOnPrimary">
+                  {draft.pickup?.name} → {draft.destination?.name}
                 </AppText>
                 <Row style={styles.summary}>
-                  <AppText color="textMuted">
+                  <AppText variant="caption" color="primary">
                     {formatDistance(data.distanceKm)} · about {formatDuration(data.durationMinutes)}
                   </AppText>
                 </Row>
-                <AppText variant="small" color="textMuted">
+                <AppText variant="small" style={styles.tripDate}>
                   {formatDateRange(draft.startDate, draft.endDate)}
                 </AppText>
-              </Card>
+              </View>
               <ChoiceChips
                 options={SORTS}
                 value={sort}
@@ -103,6 +103,13 @@ export default function Results() {
 
 const styles = StyleSheet.create({
   list: { padding: spacing.lg },
+  trip: {
+    backgroundColor: colors.ink,
+    borderRadius: radius.lg,
+    padding: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  tripDate: { color: '#B9B3A5' },
   summary: { marginVertical: spacing.xs },
   count: { marginVertical: spacing.sm },
 });

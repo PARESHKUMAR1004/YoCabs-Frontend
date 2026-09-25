@@ -5,7 +5,7 @@ import { useForm } from 'react-hook-form';
 import { loginSchema, type LoginForm } from '@/features/auth/schemas';
 import { api } from '@/shared/api/client';
 import { normalizeMobile } from '@/shared/forms/zod';
-import { AppText, Button, FormTextField, Screen, Spacer } from '@/shared/ui';
+import { Button, FormTextField, Heading, Screen } from '@/shared/ui';
 import { showError } from '@/shared/utils/feedback';
 
 export default function Login() {
@@ -32,11 +32,11 @@ export default function Login() {
         />
       }
     >
-      <AppText variant="title">Welcome back</AppText>
-      <AppText color="textMuted">
-        Enter your mobile number. We will text you a 6-digit code.
-      </AppText>
-      <Spacer size="xl" />
+      <Heading
+        eyebrow="Sign in"
+        title="Welcome back"
+        subtitle="Enter your mobile number. We will text you a 6-digit code."
+      />
       <FormTextField
         control={control}
         name="mobile"

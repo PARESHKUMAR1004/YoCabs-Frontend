@@ -5,7 +5,16 @@ import { paymentLauncher } from '@/features/payment/launcher';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { useBooking, useInitiatePayment } from '@/features/tourist/hooks';
 import { formatCountdown, useSecondsUntil } from '@/features/tourist/useHoldCountdown';
-import { AppText, Button, Card, EmptyState, KeyValue, QueryBoundary, Screen } from '@/shared/ui';
+import {
+  AppText,
+  Button,
+  Card,
+  EmptyState,
+  Heading,
+  KeyValue,
+  QueryBoundary,
+  Screen,
+} from '@/shared/ui';
 import { showError } from '@/shared/utils/feedback';
 import { formatMoney } from '@/shared/utils/format';
 
@@ -64,10 +73,11 @@ export default function Payment() {
               />
             }
           >
-            <AppText variant="title">Confirm your booking</AppText>
-            <AppText color="textMuted">
-              {booking.vehicle?.make} {booking.vehicle?.model} with {booking.partnerName}
-            </AppText>
+            <Heading
+              eyebrow="Almost there"
+              title="Confirm your booking"
+              subtitle={`${booking.vehicle?.make} ${booking.vehicle?.model} with ${booking.partnerName}`}
+            />
 
             <Card>
               <KeyValue
