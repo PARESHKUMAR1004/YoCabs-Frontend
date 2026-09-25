@@ -61,6 +61,6 @@ export function RatingInput({
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center' },
-  value: { marginLeft: 2, fontWeight: '700' },
+  value: { marginLeft: 2 },
   star: { marginRight: spacing.xs },
 });

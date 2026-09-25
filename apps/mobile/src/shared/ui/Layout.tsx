@@ -10,7 +10,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { colors, radius, spacing } from '@/config/brand';
+import { colors, radius, shadow, spacing } from '@/config/brand';
 import { AppText } from './Text';
 
 interface ScreenProps {
@@ -47,7 +47,7 @@ export function Screen({
   );
 
   return (
-    <SafeAreaView style={styles.flex} edges={['left', 'right', 'bottom']}>
+    <SafeAreaView style={[styles.flex, styles.ground]} edges={['left', 'right', 'bottom']}>
       <KeyboardAvoidingView
         style={styles.flex}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
@@ -122,7 +122,7 @@ export function KeyValue({
         {label}
       </AppText>
       {typeof value === 'string' || typeof value === 'number' ? (
-        <AppText variant={emphasise ? 'subheading' : 'body'}>{value}</AppText>
+        <AppText variant={emphasise ? 'heading' : 'body'}>{value}</AppText>
       ) : (
         value
       )}
@@ -138,15 +138,17 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderTopWidth: 1,
     borderTopColor: colors.border,
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
   },
+  ground: { backgroundColor: colors.background },
   card: {
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.lg,
     padding: spacing.lg,
     marginBottom: spacing.md,
+    ...shadow.card,
   },
   row: { flexDirection: 'row', alignItems: 'center' },
   divider: { height: 1, backgroundColor: colors.border, marginVertical: spacing.md },

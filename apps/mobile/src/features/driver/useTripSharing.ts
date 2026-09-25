@@ -16,7 +16,7 @@ const DISCLOSURE_TITLE = 'Share your location during this trip?';
 
 const DISCLOSURE_BODY =
   'YoCabs collects your location in the background, even when the app is closed or not in use, ' +
-  'so your travel partner and YoCabs support can see where the vehicle is while the trip runs. ' +
+  'so your travel partner, the traveller on the trip and YoCabs support can see where the vehicle is while the trip runs. ' +
   'Sharing starts when you start the trip and stops the moment you complete it. ' +
   'Your location is not collected at any other time.';
 
@@ -41,7 +41,7 @@ export function useTripSharing(bookingId: string) {
     if (!agreed) {
       return confirmAction(
         'Start without sharing?',
-        'Your travel partner will not be able to see where you are during this trip.',
+        'Your travel partner and the traveller will not be able to see where you are during this trip.',
         'Start anyway',
       );
     }

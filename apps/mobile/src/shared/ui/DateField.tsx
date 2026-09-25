@@ -57,13 +57,13 @@ const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.md },
   label: { marginBottom: spacing.xs },
   input: {
-    minHeight: 48,
+    minHeight: 52,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
     justifyContent: 'center',
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
   },
   error: { borderColor: colors.danger },
 });

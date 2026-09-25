@@ -177,12 +177,10 @@ export default function PartnerBookingDetail() {
               />
             ) : null}
             {booking.status === 'IN_PROGRESS' ? (
-              <TripCodeEntry
-                heading="Complete the trip"
-                hint="The traveller reads this out from their app at the destination."
-                buttonTitle="Complete trip"
+              <Button
+                title="Complete trip"
                 loading={action.isPending}
-                onSubmit={(code) => run('complete', code)}
+                onPress={() => run('complete')}
               />
             ) : null}
             {booking.status === 'CONFIRMED' ? (

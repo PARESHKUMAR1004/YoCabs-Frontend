@@ -62,7 +62,7 @@ export function useBookingAction(bookingId: string) {
         case 'start':
           return bookings.start(bookingId, value as string);
         case 'complete':
-          return bookings.complete(bookingId, value as string);
+          return bookings.complete(bookingId);
         case 'cancel':
           return bookings.cancel(bookingId, value);
       }

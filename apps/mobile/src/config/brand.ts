@@ -8,36 +8,71 @@ export const brand = {
   tokenPercentDescription: '25%',
 } as const;
 
+/**
+ * Midnight and champagne: a deep ink for weight, warm ivory for the ground, and a restrained gold
+ * accent. Screens name a role (`primary`, `surface`), never a hex value.
+ */
 export const colors = {
-  primary: '#F97316',
-  primaryDark: '#EA580C',
-  primarySoft: '#FFEDD5',
-  text: '#111827',
-  textMuted: '#6B7280',
+  ink: '#0B1220',
+  inkSoft: '#1C2540',
+  primary: '#B08D57',
+  primaryDark: '#8A6A34',
+  primarySoft: '#F3EBDA',
+  text: '#0B1220',
+  textMuted: '#6B6559',
   textOnPrimary: '#FFFFFF',
-  background: '#FFFFFF',
-  surface: '#F9FAFB',
-  border: '#E5E7EB',
-  success: '#16A34A',
-  successSoft: '#DCFCE7',
-  danger: '#DC2626',
-  dangerSoft: '#FEE2E2',
-  warning: '#D97706',
-  warningSoft: '#FEF3C7',
-  info: '#2563EB',
-  infoSoft: '#DBEAFE',
-  overlay: 'rgba(17,24,39,0.5)',
+  background: '#FBFAF7',
+  card: '#FFFFFF',
+  surface: '#F4F1EA',
+  border: '#E7E1D3',
+  success: '#2E7D5B',
+  successSoft: '#E1F2E9',
+  danger: '#B3423A',
+  dangerSoft: '#F9E3E1',
+  warning: '#A8741A',
+  warningSoft: '#F8EBD0',
+  info: '#38598B',
+  infoSoft: '#E1E9F5',
+  overlay: 'rgba(11,18,32,0.55)',
 } as const;
 
 export const spacing = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24, xxl: 32 } as const;
 
-export const radius = { sm: 8, md: 12, lg: 16, pill: 999 } as const;
+export const radius = { sm: 10, md: 14, lg: 20, xl: 28, pill: 999 } as const;
+
+/** Font family names as registered in the root layout (one family per weight on Android). */
+export const fonts = {
+  display: 'PlayfairDisplay_700Bold',
+  displaySemi: 'PlayfairDisplay_600SemiBold',
+  body: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+  bold: 'Inter_700Bold',
+} as const;
 
 export const typography = {
-  title: { fontSize: 24, fontWeight: '700' as const },
-  heading: { fontSize: 18, fontWeight: '700' as const },
-  subheading: { fontSize: 16, fontWeight: '600' as const },
-  body: { fontSize: 15, fontWeight: '400' as const },
-  caption: { fontSize: 13, fontWeight: '400' as const },
-  small: { fontSize: 12, fontWeight: '400' as const },
+  title: { fontFamily: fonts.display, fontSize: 28, lineHeight: 35, letterSpacing: -0.3 },
+  heading: { fontFamily: fonts.displaySemi, fontSize: 20, lineHeight: 27 },
+  subheading: { fontFamily: fonts.semibold, fontSize: 16, lineHeight: 22 },
+  body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22 },
+  caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0.2 },
+  small: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17 },
+} as const;
+
+/** Soft, warm shadows: depth without harshness. */
+export const shadow = {
+  card: {
+    shadowColor: '#1B1407',
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2,
+  },
+  raised: {
+    shadowColor: '#1B1407',
+    shadowOpacity: 0.16,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 8,
+  },
 } as const;

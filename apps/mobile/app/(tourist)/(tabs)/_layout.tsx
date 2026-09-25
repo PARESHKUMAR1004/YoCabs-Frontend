@@ -13,7 +13,9 @@ export default function TouristTabs() {
         options={{
           title: 'Book a ride',
           tabBarLabel: 'Home',
-          tabBarIcon: ({ color, size }) => <Ionicons name="search" color={color} size={size} />,
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'compass' : 'compass-outline'} color={color} size={size} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -21,8 +23,8 @@ export default function TouristTabs() {
         options={{
           title: 'My bookings',
           tabBarLabel: 'Bookings',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="receipt-outline" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'receipt' : 'receipt-outline'} color={color} size={size} />
           ),
         }}
       />
@@ -31,8 +33,12 @@ export default function TouristTabs() {
         options={{
           title: 'Notifications',
           tabBarBadge: unread.data && unread.data > 0 ? unread.data : undefined,
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="notifications-outline" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons
+              name={focused ? 'notifications' : 'notifications-outline'}
+              color={color}
+              size={size}
+            />
           ),
         }}
       />
@@ -40,8 +46,8 @@ export default function TouristTabs() {
         name="profile"
         options={{
           title: 'Profile',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person-outline" color={color} size={size} />
+          tabBarIcon: ({ color, size, focused }) => (
+            <Ionicons name={focused ? 'person' : 'person-outline'} color={color} size={size} />
           ),
         }}
       />

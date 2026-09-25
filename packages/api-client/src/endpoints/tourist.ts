@@ -3,6 +3,7 @@ import { newId } from '../core/http';
 import type { Booking, CreateBookingInput, PartnerRating, Payment, Review } from '../types/booking';
 import type { Uuid } from '../types/common';
 import type { Negotiation } from '../types/negotiation';
+import type { TripLocation, TripRoute } from '../types/tracking';
 import type {
   CreateTripRequestInput,
   TripRequest,
@@ -85,6 +86,12 @@ export function createTouristApi(http: HttpClient) {
       /** Starts (or resumes) the token payment for a booking awaiting payment. */
       initiate: (bookingId: Uuid) =>
         http.request<Payment>({ method: 'POST', path: `${API}/bookings/${bookingId}/payments` }),
+      /** After the trip: starts (or resumes) payment of the rest of the fare online. */
+      initiateBalance: (bookingId: Uuid) =>
+        http.request<Payment>({
+          method: 'POST',
+          path: `${API}/bookings/${bookingId}/payments/balance`,
+        }),
       forBooking: (bookingId: Uuid) =>
         http.request<Payment[]>({ path: `${API}/bookings/${bookingId}/payments` }),
       /** DEV ONLY: plays the payment provider. Not available when the API runs the prod profile. */
@@ -95,6 +102,14 @@ export function createTouristApi(http: HttpClient) {
           body: { outcome },
         }),
     },
+
+    /** Where the car on the traveller's trip is now. Null until the driver shares a position. */
+    tripLocation: (bookingId: Uuid) =>
+      http.request<TripLocation | null>({ path: `${API}/bookings/${bookingId}/location` }),
+
+    /** The journey (pickup, stops, destination) with coordinates, for the live map. */
+    tripRoute: (bookingId: Uuid) =>
+      http.request<TripRoute>({ path: `${API}/bookings/${bookingId}/route` }),
 
     partnerRating: (partnerId: Uuid) =>
       http.request<PartnerRating>({ path: `${API}/travel-partners/${partnerId}/rating` }),

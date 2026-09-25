@@ -7,19 +7,22 @@ import {
   type StyleProp,
   type ViewStyle,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import MapView, { Circle, Marker, Polyline, PROVIDER_GOOGLE } from 'react-native-maps';
 import { colors, radius, spacing } from '@/config/brand';
 import { AppText } from '@/shared/ui';
+import { PREMIUM_MAP_STYLE } from './mapStyle';
 import type { Coordinate, MapCircle, MapMarker, MarkerKind } from './types';
 
 /** Bhubaneswar: where the map opens when nothing has been chosen yet. */
 export const DEFAULT_CENTRE: Coordinate = { latitude: 20.2961, longitude: 85.8245 };
 
 const PIN_COLORS: Record<MarkerKind, string> = {
-  pickup: colors.primary,
-  destination: colors.danger,
+  pickup: colors.ink,
+  destination: colors.primary,
   stop: colors.info,
   centre: colors.primaryDark,
+  vehicle: colors.ink,
 };
 
 /** Degrees of latitude per kilometre; good enough to frame a service-area circle. */
@@ -100,7 +103,12 @@ export function MapCanvas({
     longitudeDelta: deltaForZoom(initialZoom),
   });
 
-  const framed = JSON.stringify({ markers, circles });
+  // The car moves every few seconds; only its appearing (not each step) should reframe the map.
+  const framed = JSON.stringify({
+    markers: markers.map((marker) => (marker.kind === 'vehicle' ? { id: marker.id } : marker)),
+    circles,
+  });
+  const route = markers.filter((marker) => marker.kind !== 'vehicle');
 
   useEffect(() => {
     if (!fit) return;
@@ -139,6 +147,7 @@ export function MapCanvas({
           style={{ width: box.width, height: box.height }}
           initialRegion={initialRegion.current}
           mapType={satellite ? 'hybrid' : 'standard'}
+          customMapStyle={PREMIUM_MAP_STYLE}
           // The app is light-only; without this the Google SDK follows the phone's dark mode.
           userInterfaceStyle="light"
           scrollEnabled={interactive}
@@ -165,23 +174,38 @@ export function MapCanvas({
               radius={Math.max(circle.radiusKm, 0.1) * 1000}
               strokeColor={colors.primaryDark}
               strokeWidth={2}
-              fillColor="rgba(234,88,12,0.12)"
+              fillColor="rgba(176,141,87,0.16)"
             />
           ))}
 
-          {connect && markers.length > 1 ? (
-            <Polyline coordinates={markers} strokeColor={colors.primary} strokeWidth={3} />
+          {connect && route.length > 1 ? (
+            <Polyline coordinates={route} strokeColor={colors.ink} strokeWidth={4} />
           ) : null}
 
-          {markers.map((marker) => (
-            <Marker
-              key={marker.id}
-              coordinate={marker}
-              title={marker.label}
-              pinColor={PIN_COLORS[marker.kind]}
-              tracksViewChanges={false}
-            />
-          ))}
+          {markers.map((marker) =>
+            marker.kind === 'vehicle' ? (
+              <Marker
+                key={marker.id}
+                coordinate={marker}
+                title={marker.label}
+                anchor={{ x: 0.5, y: 0.5 }}
+                // A custom view is drawn once and cached unless told otherwise.
+                tracksViewChanges
+              >
+                <View style={styles.vehicle}>
+                  <Ionicons name="car-sport" size={18} color={colors.textOnPrimary} />
+                </View>
+              </Marker>
+            ) : (
+              <Marker
+                key={marker.id}
+                coordinate={marker}
+                title={marker.label}
+                pinColor={PIN_COLORS[marker.kind]}
+                tracksViewChanges={false}
+              />
+            ),
+          )}
         </MapView>
       ) : null}
 
@@ -201,9 +225,21 @@ export function MapCanvas({
 
 const styles = StyleSheet.create({
   frame: {
+    borderRadius: radius.lg,
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: colors.surface,
+  },
+  vehicle: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.pill,
+    backgroundColor: colors.ink,
+    borderWidth: 2,
+    borderColor: colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   layerButton: {
     position: 'absolute',
@@ -212,7 +248,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.sm,
     borderRadius: radius.sm,
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
     borderWidth: 1,
     borderColor: colors.border,
   },

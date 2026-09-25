@@ -1,18 +1,32 @@
-import { colors } from '@/config/brand';
+import { colors, fonts } from '@/config/brand';
+
+const headerTitleStyle = {
+  fontFamily: fonts.displaySemi,
+  fontSize: 20,
+  color: colors.text,
+} as const;
 
 /** Shared header look for every stack navigator. */
 export const stackScreenOptions = {
   headerTintColor: colors.text,
-  headerTitleStyle: { fontWeight: '700' as const },
+  headerTitleStyle,
   headerStyle: { backgroundColor: colors.background },
   headerShadowVisible: false,
   contentStyle: { backgroundColor: colors.background },
 };
 
 export const tabScreenOptions = {
-  headerTitleStyle: { fontWeight: '700' as const },
+  headerTitleStyle,
+  headerStyle: { backgroundColor: colors.background },
   headerShadowVisible: false,
-  tabBarActiveTintColor: colors.primary,
+  sceneStyle: { backgroundColor: colors.background },
+  tabBarActiveTintColor: colors.primaryDark,
   tabBarInactiveTintColor: colors.textMuted,
-  tabBarStyle: { borderTopColor: colors.border },
+  tabBarLabelStyle: { fontFamily: fonts.medium, fontSize: 11 },
+  tabBarStyle: {
+    backgroundColor: colors.card,
+    borderTopColor: colors.border,
+    height: 64,
+    paddingTop: 6,
+  },
 };

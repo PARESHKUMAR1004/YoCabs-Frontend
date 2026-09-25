@@ -81,9 +81,9 @@ export default function Checkout() {
       </Card>
 
       <AppText variant="small" color="textMuted" style={styles.note}>
-        Next you pay a {brand.tokenPercentDescription} booking token to confirm. The rest is paid to
-        the travel partner on the day of travel. Free cancellation applies up to 24 hours before the
-        trip.
+        Next you pay a {brand.tokenPercentDescription} booking token to confirm. The rest is due
+        after your trip: pay it in the app or to your driver. Free cancellation applies up to 24
+        hours before the trip.
       </AppText>
     </Screen>
   );

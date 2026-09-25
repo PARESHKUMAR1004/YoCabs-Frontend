@@ -3,7 +3,7 @@ export interface Coordinate {
   longitude: number;
 }
 
-export type MarkerKind = 'pickup' | 'destination' | 'stop' | 'centre';
+export type MarkerKind = 'pickup' | 'destination' | 'stop' | 'centre' | 'vehicle';
 
 export interface MapMarker extends Coordinate {
   id: string;

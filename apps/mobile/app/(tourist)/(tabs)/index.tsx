@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { colors, radius, spacing } from '@/config/brand';
+import { colors, radius, shadow, spacing } from '@/config/brand';
 import { useFavouritePlaces } from '@/features/tourist/favouritePlaces';
 import { PlaceSuggestionRow } from '@/features/tourist/PlaceSuggestionRow';
 import { selectDraft, useSearchStore, type PlaceField } from '@/features/tourist/searchStore';
@@ -16,6 +16,12 @@ import { toIsoDate } from '@/shared/utils/format';
 import { TRIP_TYPE_OPTIONS, VEHICLE_CATEGORY_OPTIONS } from '@/shared/utils/labels';
 
 const POPULAR_SHOWN = 5;
+
+function greeting(now: Date): string {
+  const hour = now.getHours();
+  if (hour < 12) return 'Good morning';
+  return hour < 17 ? 'Good afternoon' : 'Good evening';
+}
 
 export default function Home() {
   const store = useSearchStore();
@@ -73,43 +79,52 @@ export default function Home() {
         ) : undefined
       }
     >
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Change pickup location"
-        onPress={() => pick('pickup')}
-        style={styles.location}
-      >
-        <View style={styles.locationIcon}>
-          <Ionicons name="locate" size={18} color={colors.primary} />
-        </View>
-        <View style={styles.flex}>
-          <AppText variant="caption" color="textMuted">
-            Your location
-          </AppText>
-          <AppText variant="subheading" numberOfLines={1}>
-            {store.pickup?.name ?? (locating ? 'Finding your location…' : 'Set your pickup')}
-          </AppText>
-        </View>
-        <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
-      </Pressable>
-
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Where do you want to go?"
-        onPress={() => pick('destination')}
-        style={styles.search}
-        testID="where-to"
-      >
-        <Ionicons name="search" size={20} color={colors.primary} />
-        <AppText
-          variant="subheading"
-          color={store.destination ? 'text' : 'textMuted'}
-          style={styles.flex}
-          numberOfLines={1}
-        >
-          {store.destination?.name ?? 'Where do you want to go?'}
+      <View style={styles.hero}>
+        <AppText variant="caption" color="primary" style={styles.greeting}>
+          {greeting(new Date())}
         </AppText>
-      </Pressable>
+        <AppText variant="title" color="textOnPrimary" style={styles.heroTitle}>
+          Where to next?
+        </AppText>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Change pickup location"
+          onPress={() => pick('pickup')}
+          style={styles.location}
+        >
+          <View style={styles.locationIcon}>
+            <Ionicons name="locate" size={18} color={colors.ink} />
+          </View>
+          <View style={styles.flex}>
+            <AppText variant="caption" color="primary">
+              Your location
+            </AppText>
+            <AppText variant="subheading" color="textOnPrimary" numberOfLines={1}>
+              {store.pickup?.name ?? (locating ? 'Finding your location…' : 'Set your pickup')}
+            </AppText>
+          </View>
+          <Ionicons name="chevron-down" size={20} color={colors.primary} />
+        </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Where do you want to go?"
+          onPress={() => pick('destination')}
+          style={styles.search}
+          testID="where-to"
+        >
+          <Ionicons name="search" size={20} color={colors.primaryDark} />
+          <AppText
+            variant="subheading"
+            color={store.destination ? 'text' : 'textMuted'}
+            style={styles.flex}
+            numberOfLines={1}
+          >
+            {store.destination?.name ?? 'Where do you want to go?'}
+          </AppText>
+        </Pressable>
+      </View>
 
       {store.stops.length ? (
         <AppText variant="small" color="textMuted" style={styles.via}>
@@ -189,17 +204,26 @@ export default function Home() {
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
+  hero: {
+    backgroundColor: colors.ink,
+    borderRadius: radius.xl,
+    padding: spacing.xl,
+    marginBottom: spacing.lg,
+    ...shadow.raised,
+  },
+  greeting: { letterSpacing: 1.5, textTransform: 'uppercase' },
+  heroTitle: { marginTop: spacing.xs, marginBottom: spacing.lg },
   location: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    paddingVertical: spacing.md,
+    paddingBottom: spacing.lg,
   },
   locationIcon: {
-    width: 34,
-    height: 34,
+    width: 36,
+    height: 36,
     borderRadius: radius.pill,
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -207,12 +231,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
-    minHeight: 52,
+    minHeight: 56,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: colors.border,
+    backgroundColor: colors.card,
   },
   via: { marginTop: spacing.sm },
   suggestions: { marginTop: spacing.lg },

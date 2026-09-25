@@ -18,8 +18,9 @@ export function useTripAction(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ action, code }: { action: 'start' | 'complete'; code: string }) =>
-      api.driver[action](id, code),
+    // Starting needs the code the traveller reads out; completing happens on arrival.
+    mutationFn: (input: { action: 'start'; code: string } | { action: 'complete' }) =>
+      input.action === 'start' ? api.driver.start(id, input.code) : api.driver.complete(id),
     onSuccess: (trip) => {
       queryClient.setQueryData(keys.driver.trip(id), trip);
       void queryClient.invalidateQueries({ queryKey: keys.driver.trips() });

@@ -1,6 +1,6 @@
-import type { Ref } from 'react';
+import { useState, type Ref } from 'react';
 import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
-import { colors, radius, spacing } from '@/config/brand';
+import { colors, fonts, radius, spacing } from '@/config/brand';
 import { AppText } from './Text';
 
 interface Props extends TextInputProps {
@@ -11,7 +11,9 @@ interface Props extends TextInputProps {
   ref?: Ref<TextInput>;
 }
 
-export function TextField({ label, error, hint, style, ref, ...input }: Props) {
+export function TextField({ label, error, hint, style, ref, onFocus, onBlur, ...input }: Props) {
+  const [focused, setFocused] = useState(false);
+
   return (
     <View style={styles.wrapper}>
       <AppText variant="caption" color="textMuted" style={styles.label}>
@@ -21,9 +23,19 @@ export function TextField({ label, error, hint, style, ref, ...input }: Props) {
         ref={ref}
         accessibilityLabel={label}
         placeholderTextColor={colors.textMuted}
+        selectionColor={colors.primary}
         {...input}
+        onFocus={(event) => {
+          setFocused(true);
+          onFocus?.(event);
+        }}
+        onBlur={(event) => {
+          setFocused(false);
+          onBlur?.(event);
+        }}
         style={[
           styles.input,
+          focused && styles.inputFocused,
           !!error && styles.inputError,
           input.multiline && styles.multiline,
           style,
@@ -46,15 +58,17 @@ const styles = StyleSheet.create({
   wrapper: { marginBottom: spacing.md },
   label: { marginBottom: spacing.xs },
   input: {
-    minHeight: 48,
+    minHeight: 52,
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radius.md,
-    paddingHorizontal: spacing.md,
+    paddingHorizontal: spacing.lg,
+    fontFamily: fonts.body,
     fontSize: 16,
     color: colors.text,
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
   },
+  inputFocused: { borderColor: colors.primary },
   inputError: { borderColor: colors.danger },
   multiline: { minHeight: 96, paddingTop: spacing.md, textAlignVertical: 'top' },
   message: { marginTop: spacing.xs },

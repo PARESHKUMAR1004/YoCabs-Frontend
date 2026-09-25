@@ -7,6 +7,7 @@ import { AppText, Button, CallButton, Card } from '@/shared/ui';
 import { toIsoDate } from '@/shared/utils/format';
 import { useMyBookings } from './hooks';
 import { findOngoingTrip } from './ongoingTrip';
+import { LiveTripMap } from './LiveTripMap';
 import { TripCodeCard } from './TripCodeCard';
 
 const REFRESH_WHILE_OPEN_MS = 15_000;
@@ -72,7 +73,9 @@ export function ActiveTripPrompt() {
               </Card>
             ) : null}
 
-            {ongoing.tripCode ? <TripCodeCard code={ongoing.tripCode} started={started} /> : null}
+            {started ? <LiveTripMap bookingId={ongoing.id} height={220} /> : null}
+
+            {ongoing.tripCode ? <TripCodeCard code={ongoing.tripCode} /> : null}
 
             <View style={styles.actions}>
               <Button

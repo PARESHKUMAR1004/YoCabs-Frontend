@@ -239,11 +239,18 @@ describe.skipIf(!BASE_URL)('marketplace end to end', () => {
     const touristPeek = (await tourist.admin.liveTrips().catch((e: unknown) => e)) as ApiError;
     expect(touristPeek).toBeInstanceOf(ApiError);
 
-    const completionCode = (await tourist.tourist.bookings.get(booking.id)).tripCode;
-    expect(completionCode).not.toBe(startCode);
-    expect((await driver.driver.complete(booking.id, completionCode as string)).status).toBe(
-      'COMPLETED',
-    );
+    // The traveller can watch the car and the journey it is on.
+    const followed = await tourist.tourist.tripLocation(booking.id);
+    expect(followed?.latitude).toBeCloseTo(20.2444, 3);
+    expect((await tourist.tourist.tripRoute(booking.id)).destination.description).toBeTruthy();
+
+    // On arrival the driver completes the trip without a code.
+    expect((await driver.driver.complete(booking.id)).status).toBe('COMPLETED');
+
+    // The traveller then pays the rest of the fare online.
+    const balance = await tourist.tourist.payments.initiateBalance(booking.id);
+    expect(balance.purpose).toBe('BALANCE');
+    await tourist.tourist.payments.simulateSandbox(balance.id, 'SUCCESS');
 
     // ---- review, settlement, reports -----------------------------------------------------
     const review = await tourist.tourist.bookings.review(booking.id, 5, 'Excellent');

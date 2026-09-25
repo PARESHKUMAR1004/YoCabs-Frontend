@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Booking, CreateBookingInput, TripSearchRequest } from '@yocabs/api-client';
+import { paymentLauncher } from '@/features/payment/launcher';
 import { api } from '@/shared/api/client';
 import { keys } from '@/shared/query/keys';
 import { useBookingFlow } from './bookingFlow';
@@ -30,6 +31,41 @@ export function useBooking(id: string) {
     queryFn: () => api.tourist.bookings.get(id),
     refetchInterval: (query) =>
       query.state.data && LIVE.includes(query.state.data.status) ? 15_000 : false,
+  });
+}
+
+const CAR_REFRESH_MS = 8_000;
+
+/** Where the traveller's car is now, refreshed while the trip runs. Null until the driver shares. */
+export function useTripLocation(bookingId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: keys.tourist.tripLocation(bookingId),
+    queryFn: () => api.tourist.tripLocation(bookingId),
+    enabled,
+    refetchInterval: enabled ? CAR_REFRESH_MS : false,
+  });
+}
+
+/** The journey's pickup, stops and destination. It does not change once booked. */
+export function useTripRoute(bookingId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: keys.tourist.tripRoute(bookingId),
+    queryFn: () => api.tourist.tripRoute(bookingId),
+    enabled,
+    staleTime: Infinity,
+  });
+}
+
+/** After the trip: pay the rest of the fare online. The traveller may instead pay the driver. */
+export function usePayBalance(bookingId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const payment = await api.tourist.payments.initiateBalance(bookingId);
+      await paymentLauncher.pay(payment);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.tourist.payments(bookingId) }),
   });
 }
 

@@ -46,8 +46,8 @@ export interface Booking {
   cancellationReason: string | null;
   createdAt: IsoInstant;
   /**
-   * Tourist only. The code to read out to the driver right now: the start code once a driver is
-   * assigned, the completion code while the trip runs, null otherwise.
+   * Tourist only. The code to read out to the driver so the trip can start: shown once a driver
+   * is assigned, null from the moment the trip begins.
    */
   tripCode: string | null;
 }
@@ -62,9 +62,13 @@ export interface CreateBookingInput {
 export type PaymentStatus =
   'INITIATED' | 'SUCCEEDED' | 'FAILED' | 'PARTIALLY_REFUNDED' | 'REFUNDED';
 
+/** What a payment is for: the token that confirms the booking, or the rest of the fare after the trip. */
+export type PaymentPurpose = 'TOKEN' | 'BALANCE';
+
 export interface Payment {
   id: Uuid;
   bookingId: Uuid;
+  purpose: PaymentPurpose;
   amount: number;
   currency: string;
   status: PaymentStatus;

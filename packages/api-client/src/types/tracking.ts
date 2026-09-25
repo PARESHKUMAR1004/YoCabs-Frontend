@@ -17,6 +17,20 @@ export interface ReportLocationInput {
   speedKph?: number;
 }
 
+/** One end point or stop of a booked journey. Coordinates are absent if the trip was booked without them. */
+export interface RoutePlace {
+  description: string;
+  latitude: number | null;
+  longitude: number | null;
+}
+
+/** The journey a booking covers, for drawing on a map. */
+export interface TripRoute {
+  pickup: RoutePlace;
+  stops: RoutePlace[];
+  destination: RoutePlace;
+}
+
 /** A trip currently on the road, with its car's position when the driver is sharing one. */
 export interface LiveTrip {
   bookingId: Uuid;

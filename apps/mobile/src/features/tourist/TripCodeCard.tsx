@@ -1,24 +1,20 @@
 import { StyleSheet, View } from 'react-native';
-import { colors, radius, spacing } from '@/config/brand';
+import { colors, fonts, radius, spacing } from '@/config/brand';
 import { AppText, Card } from '@/shared/ui';
 
-/**
- * The code the driver needs from the tourist. Which one it is depends on the trip: the API sends
- * the start code before the trip and the completion code while it runs.
- */
-export function TripCodeCard({ code, started }: { code: string; started: boolean }) {
+/** The start code the driver needs from the tourist to begin the trip. */
+export function TripCodeCard({ code }: { code: string }) {
   return (
     <Card>
-      <AppText variant="subheading">{started ? 'Trip completion code' : 'Trip start code'}</AppText>
+      <AppText variant="subheading">Your trip start code</AppText>
       <View style={styles.code}>
         <AppText style={styles.digits} accessibilityLabel={`Code ${code.split('').join(' ')}`}>
           {code}
         </AppText>
       </View>
       <AppText variant="small" color="textMuted">
-        {started
-          ? 'Give this code to the driver when you reach your destination, so they can complete the trip.'
-          : 'Give this code to the driver when you are in the cab, so they can start the trip. Do not share it earlier.'}
+        Give this code to the driver once you are in the cab, so they can start the trip. Do not
+        share it earlier.
       </AppText>
     </Card>
   );
@@ -27,11 +23,17 @@ export function TripCodeCard({ code, started }: { code: string; started: boolean
 const styles = StyleSheet.create({
   code: {
     alignSelf: 'center',
-    backgroundColor: colors.primarySoft,
+    backgroundColor: colors.ink,
     borderRadius: radius.md,
     paddingHorizontal: spacing.xl,
     paddingVertical: spacing.md,
     marginVertical: spacing.md,
   },
-  digits: { fontSize: 34, fontWeight: '800', letterSpacing: 8, color: colors.primaryDark },
+  digits: {
+    fontFamily: fonts.display,
+    fontSize: 34,
+    lineHeight: 42,
+    letterSpacing: 10,
+    color: colors.primary,
+  },
 });

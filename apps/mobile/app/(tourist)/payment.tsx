@@ -80,7 +80,7 @@ export default function Payment() {
                 emphasise
               />
               <KeyValue
-                label="Balance, paid on the day"
+                label="Balance, due after the trip"
                 value={formatMoney(booking.totalAmount - booking.tokenAmount, booking.currency)}
               />
             </Card>

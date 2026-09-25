@@ -14,7 +14,7 @@ import {
   SectionHeader,
   Spacer,
 } from '@/shared/ui';
-import { showError } from '@/shared/utils/feedback';
+import { confirmAction, showError } from '@/shared/utils/feedback';
 import { formatDateRange } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
@@ -24,23 +24,35 @@ export default function DriverTrip() {
   const action = useTripAction(id);
   const sharing = useTripSharing(id);
 
-  const run = async (name: 'start' | 'complete', code: string) => {
+  const start = async (code: string) => {
     // Location sharing lasts exactly as long as the trip: it starts here and stops on completion.
-    if (name === 'start' && !(await sharing.begin())) {
-      return;
-    }
+    if (!(await sharing.begin())) return;
 
     action.mutate(
-      { action: name, code },
+      { action: 'start', code },
       {
-        onSuccess: () => {
-          if (name === 'complete') void sharing.end();
-        },
         onError: (error) => {
           // A wrong code means the trip did not start, so stop tracking the driver again.
-          if (name === 'start') void sharing.end();
+          void sharing.end();
           showError(error, 'That did not work');
         },
+      },
+    );
+  };
+
+  const complete = async () => {
+    const arrived = await confirmAction(
+      'Complete this trip?',
+      'Confirm that you have reached the destination. The traveller will then be asked to pay the balance.',
+      'Yes, complete',
+    );
+    if (!arrived) return;
+
+    action.mutate(
+      { action: 'complete' },
+      {
+        onSuccess: () => void sharing.end(),
+        onError: (error) => showError(error, 'That did not work'),
       },
     );
   };
@@ -64,7 +76,8 @@ export default function DriverTrip() {
                   Sharing your location
                 </AppText>
                 <AppText variant="small" color="textMuted">
-                  Your travel partner can see where you are. This stops when you complete the trip.
+                  Your travel partner and the traveller can see where you are. This stops when you
+                  complete the trip.
                 </AppText>
               </Card>
             </>
@@ -97,16 +110,15 @@ export default function DriverTrip() {
               hint="Ask the traveller for the start code shown in their YoCabs app."
               buttonTitle="Start trip"
               loading={action.isPending}
-              onSubmit={(code) => void run('start', code)}
+              onSubmit={(code) => void start(code)}
             />
           ) : null}
           {trip.status === 'IN_PROGRESS' ? (
-            <TripCodeEntry
-              heading="Complete the trip"
-              hint="At the destination, ask the traveller for the completion code shown in their app."
-              buttonTitle="Complete trip"
+            <Button
+              title="I have reached the destination"
               loading={action.isPending}
-              onSubmit={(code) => void run('complete', code)}
+              onPress={() => void complete()}
+              testID="complete-trip"
             />
           ) : null}
           <Spacer size="sm" />

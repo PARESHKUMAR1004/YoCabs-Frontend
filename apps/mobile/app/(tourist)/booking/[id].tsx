@@ -1,6 +1,8 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useBooking, useBookingPayments, useCancelBooking } from '@/features/tourist/hooks';
+import { BalanceCard } from '@/features/tourist/BalanceCard';
 import { FareTotal } from '@/features/tourist/FareTotal';
+import { LiveTripMap } from '@/features/tourist/LiveTripMap';
 import { TripCodeCard } from '@/features/tourist/TripCodeCard';
 import {
   AppText,
@@ -61,9 +63,20 @@ export default function BookingDetail() {
             />
           ) : null}
 
+          {booking.status === 'IN_PROGRESS' ? (
+            <>
+              <SectionHeader title="Your trip, live" />
+              <LiveTripMap bookingId={booking.id} />
+            </>
+          ) : null}
+
+          {booking.status === 'COMPLETED' ? (
+            <BalanceCard booking={booking} payments={payments.data ?? []} />
+          ) : null}
+
           {booking.tripCode ? (
             <>
-              <TripCodeCard code={booking.tripCode} started={booking.status === 'IN_PROGRESS'} />
+              <TripCodeCard code={booking.tripCode} />
               <Spacer size="sm" />
             </>
           ) : null}
@@ -102,7 +115,7 @@ export default function BookingDetail() {
               value={formatMoney(booking.tokenAmount, booking.currency)}
             />
             <KeyValue
-              label="Balance to pay the partner"
+              label="Balance due after the trip"
               value={formatMoney(booking.totalAmount - booking.tokenAmount, booking.currency)}
             />
           </Card>
@@ -114,7 +127,7 @@ export default function BookingDetail() {
                 {payments.data.map((payment) => (
                   <KeyValue
                     key={payment.id}
-                    label={`${humanize(payment.status)} · ${formatDateTime(payment.createdAt)}`}
+                    label={`${payment.purpose === 'BALANCE' ? 'Trip balance' : 'Booking token'} · ${humanize(payment.status)} · ${formatDateTime(payment.createdAt)}`}
                     value={
                       payment.refundedAmount > 0
                         ? `${formatMoney(payment.amount, payment.currency)} (refunded ${formatMoney(payment.refundedAmount, payment.currency)})`

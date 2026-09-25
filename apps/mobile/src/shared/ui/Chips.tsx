@@ -16,11 +16,7 @@ export function Chip({ label, selected, onPress }: ChipProps) {
       onPress={onPress}
       style={[styles.chip, selected && styles.chipSelected]}
     >
-      <AppText
-        variant="caption"
-        color={selected ? 'primaryDark' : 'textMuted'}
-        style={styles.chipText}
-      >
+      <AppText variant="caption" color={selected ? 'textOnPrimary' : 'textMuted'}>
         {label}
       </AppText>
     </Pressable>
@@ -84,7 +80,7 @@ export function Badge({
 
   return (
     <View style={[styles.badge, { backgroundColor: look.bg }]}>
-      <AppText variant="small" color={look.fg} style={styles.badgeText}>
+      <AppText variant="caption" color={look.fg}>
         {label}
       </AppText>
     </View>
@@ -95,20 +91,18 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', gap: spacing.sm, paddingVertical: spacing.xs },
   wrap: { flexWrap: 'wrap' },
   chip: {
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm + 2,
     borderRadius: radius.pill,
     borderWidth: 1,
     borderColor: colors.border,
-    backgroundColor: colors.background,
+    backgroundColor: colors.card,
   },
-  chipSelected: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  chipText: { fontWeight: '600' },
+  chipSelected: { borderColor: colors.ink, backgroundColor: colors.ink },
   badge: {
     alignSelf: 'flex-start',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 3,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 4,
     borderRadius: radius.pill,
   },
-  badgeText: { fontWeight: '700' },
 });

@@ -153,12 +153,9 @@ export function createPartnerApi(http: HttpClient) {
           path: `${API}/bookings/${bookingId}/start`,
           body: { code },
         }),
-      complete: (bookingId: Uuid, code: string) =>
-        http.request<Booking>({
-          method: 'POST',
-          path: `${API}/bookings/${bookingId}/complete`,
-          body: { code },
-        }),
+      /** Completed on arrival; the tourist is then offered the balance to pay. */
+      complete: (bookingId: Uuid) =>
+        http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/complete` }),
       cancel: (bookingId: Uuid, reason?: string) =>
         http.request<Booking>({
           method: 'POST',
@@ -245,12 +242,9 @@ export function createDriverApi(http: HttpClient) {
         path: `${API}/bookings/${bookingId}/start`,
         body: { code },
       }),
-    complete: (bookingId: Uuid, code: string) =>
-      http.request<Booking>({
-        method: 'POST',
-        path: `${API}/bookings/${bookingId}/complete`,
-        body: { code },
-      }),
+    /** Marks the trip complete on arrival; the tourist is then offered the balance to pay. */
+    complete: (bookingId: Uuid) =>
+      http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/complete` }),
 
     /** Shares where the car is. The API only accepts this while the trip is in progress. */
     reportLocation: (bookingId: Uuid, input: ReportLocationInput) =>

@@ -296,14 +296,14 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     backgroundColor: colors.background,
   },
-  chipText: { color: colors.text, fontWeight: '600' },
+  chipText: { color: colors.text },
   action: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
     paddingVertical: spacing.md,
   },
-  actionText: { color: colors.primaryDark, fontWeight: '600' },
+  actionText: { color: colors.primaryDark },
   listHeading: { marginTop: spacing.sm, marginBottom: spacing.xs },
   mapRow: { marginTop: spacing.md, marginBottom: spacing.sm },
 });

@@ -49,7 +49,7 @@ Sign-in is by mobile number and one-time code. **Locally the code is printed in 
 4. Mobile (partner) → **Fleet** → add a vehicle → **Where this vehicle works** → add an area covering your pickup → **Set prices** → mark it available; **More → Drivers** → add a driver. A vehicle with no service area never shows up in a search.
 5. Sign out, sign in as a new number → tourist → search, optionally make a price offer, book, pay the token.
    With `EXPO_PUBLIC_SANDBOX_PAYMENTS=true` (the `.env.example` default) the **Pay** button completes the payment through the backend's sandbox gateway. Without it the app says online payment is not enabled, which is what a production build does until a real provider is connected.
-6. Partner → **Bookings** → assign the driver → driver signs in (with the driver's mobile). The tourist's app now shows a **6-digit start code** (also on the pop-up that appears when the app is reopened); the driver types it in to start the trip and accepts location sharing. At the end the tourist's app shows a different **completion code** that the driver types in to complete the trip. Watch the car on the partner's **Fleet map** and the admin console's **Live trips**, then complete the trip.
+6. Partner → **Bookings** → assign the driver → driver signs in (with the driver's mobile). The tourist's app now shows a **6-digit start code** (also on the pop-up that appears when the app is reopened); the driver types it in to start the trip and accepts location sharing. Watch the car on the partner's **Fleet map**, the admin console's **Live trips** and the tourist's own trip screen. On arrival the driver taps **I have reached the destination** (no code), and the tourist is offered the balance to pay in the app (or can pay the driver directly).
 7. Tourist → rate the trip. Partner → **Wallet**. Admin → dashboard, payments, payouts.
 
 The same journey is automated in `packages/api-client/test/e2e`:
@@ -120,8 +120,8 @@ ground with different cars. A vehicle with no area never appears in a traveller'
 partner's **Fleet map** draws every vehicle's area as a circle and puts a pin on any car currently
 on a trip.
 
-While a trip runs, the driver's app shares its position in the background, and the partner and
-YoCabs admins can see it. This needs care at release time:
+While a trip runs, the driver's app shares its position in the background, and the traveller on that
+trip, the partner and YoCabs admins can see it. This needs care at release time:
 
 - The app asks for `ACCESS_BACKGROUND_LOCATION` and runs a foreground service with a visible
   notification. Before the system prompt, the driver sees a plain-language disclosure
@@ -129,8 +129,8 @@ YoCabs admins can see it. This needs care at release time:
 - Play Console requires a **background location declaration** with a video showing the in-app
   disclosure and the feature in use. Expect review to take longer because of it.
 - Only the **latest** position is stored, one row per trip, overwritten as it moves. The API
-  accepts and serves it only while the trip is `IN_PROGRESS`, only the owning partner and admins
-  may read it, and a scheduled sweep clears anything a finished trip left behind. Say exactly this
+  accepts and serves it only while the trip is `IN_PROGRESS`, only the traveller on the trip, the
+  owning partner and admins may read it, and a scheduled sweep clears anything a finished trip left behind. Say exactly this
   in the privacy policy and the Data safety form.
 
 Coordinates are named with the device's geocoder (`placeAtCoordinate`). Naming is a nicety: the API

@@ -19,7 +19,7 @@ export function BookingCard({ booking, onPress, counterparty }: Props) {
   return (
     <Card onPress={onPress}>
       <Row style={styles.top}>
-        <AppText variant="subheading" style={styles.route}>
+        <AppText variant="heading" style={styles.route}>
           {booking.pickup} → {booking.destination}
         </AppText>
         <Badge
@@ -36,7 +36,7 @@ export function BookingCard({ booking, onPress, counterparty }: Props) {
         <AppText variant="small" color="textMuted" style={styles.route}>
           {counterparty ?? ''}
         </AppText>
-        <AppText variant="subheading">{formatMoney(booking.totalAmount, booking.currency)}</AppText>
+        <AppText variant="heading">{formatMoney(booking.totalAmount, booking.currency)}</AppText>
       </Row>
     </Card>
   );

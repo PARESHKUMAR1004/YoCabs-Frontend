@@ -17,6 +17,8 @@ export const keys = {
     bookings: () => ['tourist', 'bookings'] as const,
     booking: (id: string) => ['tourist', 'booking', id] as const,
     payments: (bookingId: string) => ['tourist', 'payments', bookingId] as const,
+    tripLocation: (bookingId: string) => ['tourist', 'trip-location', bookingId] as const,
+    tripRoute: (bookingId: string) => ['tourist', 'trip-route', bookingId] as const,
     negotiation: (id: string) => ['tourist', 'negotiation', id] as const,
     negotiationsForTrip: (tripRequestId: string) =>
       ['tourist', 'negotiations', tripRequestId] as const,
