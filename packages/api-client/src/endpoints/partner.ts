@@ -146,10 +146,19 @@ export function createPartnerApi(http: HttpClient) {
           path: `${API}/bookings/${bookingId}/driver`,
           body: { driverId },
         }),
-      start: (bookingId: Uuid) =>
-        http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/start` }),
-      complete: (bookingId: Uuid) =>
-        http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/complete` }),
+      /** `code` is the one the tourist reads out (see Booking.tripCode). */
+      start: (bookingId: Uuid, code: string) =>
+        http.request<Booking>({
+          method: 'POST',
+          path: `${API}/bookings/${bookingId}/start`,
+          body: { code },
+        }),
+      complete: (bookingId: Uuid, code: string) =>
+        http.request<Booking>({
+          method: 'POST',
+          path: `${API}/bookings/${bookingId}/complete`,
+          body: { code },
+        }),
       cancel: (bookingId: Uuid, reason?: string) =>
         http.request<Booking>({
           method: 'POST',
@@ -229,10 +238,19 @@ export function createDriverApi(http: HttpClient) {
   return {
     trips: () => http.request<Booking[]>({ path: `${API}/driver/bookings` }),
     get: (bookingId: Uuid) => http.request<Booking>({ path: `${API}/bookings/${bookingId}` }),
-    start: (bookingId: Uuid) =>
-      http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/start` }),
-    complete: (bookingId: Uuid) =>
-      http.request<Booking>({ method: 'POST', path: `${API}/bookings/${bookingId}/complete` }),
+    /** `code` is the one the tourist reads out (see Booking.tripCode). */
+    start: (bookingId: Uuid, code: string) =>
+      http.request<Booking>({
+        method: 'POST',
+        path: `${API}/bookings/${bookingId}/start`,
+        body: { code },
+      }),
+    complete: (bookingId: Uuid, code: string) =>
+      http.request<Booking>({
+        method: 'POST',
+        path: `${API}/bookings/${bookingId}/complete`,
+        body: { code },
+      }),
 
     /** Shares where the car is. The API only accepts this while the trip is in progress. */
     reportLocation: (bookingId: Uuid, input: ReportLocationInput) =>

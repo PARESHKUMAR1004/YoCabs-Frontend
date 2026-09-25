@@ -9,12 +9,15 @@ export interface SearchDraft {
   stops: Place[];
   startDate: string;
   endDate: string;
-  passengerCount: number;
   vehicleCategory?: VehicleCategory;
   tripType?: TripType;
 }
 
-export const MAX_PASSENGERS = 60;
+/**
+ * The trip API still takes a passenger count, but the tourist is not asked: every search and
+ * request says one, so no vehicle is filtered out by seats.
+ */
+export const DEFAULT_PASSENGERS = 1;
 export const MAX_STOPS = 5;
 
 export function initialDraft(today: Date = new Date()): SearchDraft {
@@ -25,7 +28,6 @@ export function initialDraft(today: Date = new Date()): SearchDraft {
     stops: [],
     startDate: start,
     endDate: start,
-    passengerCount: 2,
   };
 }
 
@@ -40,9 +42,6 @@ export function validateDraft(
     return 'Pickup and destination cannot be the same place.';
   if (draft.startDate < today) return 'The travel date cannot be in the past.';
   if (draft.endDate < draft.startDate) return 'The return date cannot be before the start date.';
-  if (draft.passengerCount < 1 || draft.passengerCount > MAX_PASSENGERS) {
-    return `Passengers must be between 1 and ${MAX_PASSENGERS}.`;
-  }
   return null;
 }
 
@@ -62,13 +61,13 @@ export function toSearchRequest(draft: SearchDraft): TripSearchRequest {
     stops: draft.stops.map(toLocation),
     startDate: draft.startDate,
     endDate: draft.endDate,
-    passengerCount: draft.passengerCount,
+    passengerCount: DEFAULT_PASSENGERS,
     vehicleCategory: draft.vehicleCategory,
     tripType: draft.tripType,
   };
 }
 
-/** Same journey (places, dates, passengers)? Used to decide whether a trip request can be reused. */
+/** Same journey (places, stops, dates)? Used to decide whether a trip request can be reused. */
 export function isSameTrip(a: SearchDraft | null, b: SearchDraft | null): boolean {
   if (!a || !b) return false;
   return (
@@ -76,7 +75,6 @@ export function isSameTrip(a: SearchDraft | null, b: SearchDraft | null): boolea
     a.destination?.id === b.destination?.id &&
     a.startDate === b.startDate &&
     a.endDate === b.endDate &&
-    a.passengerCount === b.passengerCount &&
     a.stops.map((s) => s.id).join('|') === b.stops.map((s) => s.id).join('|')
   );
 }

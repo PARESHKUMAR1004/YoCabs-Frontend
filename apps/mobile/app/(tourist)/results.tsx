@@ -73,8 +73,7 @@ export default function Results() {
                   </AppText>
                 </Row>
                 <AppText variant="small" color="textMuted">
-                  {formatDateRange(draft.startDate, draft.endDate)} · {draft.passengerCount}{' '}
-                  passengers
+                  {formatDateRange(draft.startDate, draft.endDate)}
                 </AppText>
               </Card>
               <ChoiceChips

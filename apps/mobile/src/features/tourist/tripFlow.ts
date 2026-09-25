@@ -1,6 +1,6 @@
 import { api } from '@/shared/api/client';
 import { useBookingFlow } from './bookingFlow';
-import { tripBrief, validateDraft } from './searchDraft';
+import { DEFAULT_PASSENGERS, tripBrief, validateDraft } from './searchDraft';
 
 /**
  * The API needs a submitted trip request before anyone can negotiate or book. The tourist never
@@ -33,7 +33,7 @@ export async function ensureSubmittedTripRequest(): Promise<string> {
     destinationLongitude: draft.destination.longitude,
     startDate: draft.startDate,
     endDate: draft.endDate,
-    passengerCount: draft.passengerCount,
+    passengerCount: DEFAULT_PASSENGERS,
     tripBrief: tripBrief(draft),
     tripType: draft.tripType,
     vehicleCategory: draft.vehicleCategory,

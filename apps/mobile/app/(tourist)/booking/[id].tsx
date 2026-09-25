@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useBooking, useBookingPayments, useCancelBooking } from '@/features/tourist/hooks';
-import { PriceBreakup } from '@/features/tourist/PriceBreakup';
+import { FareTotal } from '@/features/tourist/FareTotal';
+import { TripCodeCard } from '@/features/tourist/TripCodeCard';
 import {
   AppText,
   Badge,
@@ -60,10 +61,16 @@ export default function BookingDetail() {
             />
           ) : null}
 
+          {booking.tripCode ? (
+            <>
+              <TripCodeCard code={booking.tripCode} started={booking.status === 'IN_PROGRESS'} />
+              <Spacer size="sm" />
+            </>
+          ) : null}
+
           <SectionHeader title="Trip" />
           <Card>
             <KeyValue label="Type" value={tripTypeLabel(booking.tripType)} />
-            <KeyValue label="Passengers" value={`${booking.passengerCount}`} />
             <KeyValue label="Travel partner" value={booking.partnerName ?? '-'} />
             {booking.vehicle ? (
               <KeyValue
@@ -89,11 +96,7 @@ export default function BookingDetail() {
 
           <SectionHeader title="Fare" />
           <Card>
-            <PriceBreakup
-              components={booking.priceComponents}
-              total={booking.totalAmount}
-              currency={booking.currency}
-            />
+            <FareTotal total={booking.totalAmount} currency={booking.currency} />
             <KeyValue
               label="Token paid online"
               value={formatMoney(booking.tokenAmount, booking.currency)}

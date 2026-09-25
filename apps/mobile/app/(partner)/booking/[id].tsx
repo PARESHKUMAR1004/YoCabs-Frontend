@@ -20,6 +20,7 @@ import {
   SectionHeader,
   Spacer,
 } from '@/shared/ui';
+import { TripCodeEntry } from '@/features/trip/TripCodeEntry';
 import { confirmAction, showError } from '@/shared/utils/feedback';
 import { formatDateRange, formatDateTime, formatMoney } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
@@ -74,7 +75,6 @@ export default function PartnerBookingDetail() {
             <SectionHeader title="Trip" />
             <Card>
               <KeyValue label="Type" value={tripTypeLabel(booking.tripType)} />
-              <KeyValue label="Passengers" value={`${booking.passengerCount}`} />
               {booking.vehicle ? (
                 <KeyValue
                   label="Vehicle"
@@ -167,18 +167,22 @@ export default function PartnerBookingDetail() {
             ) : null}
 
             {booking.status === 'CONFIRMED' ? (
-              <Button
-                title="Start trip"
+              <TripCodeEntry
+                heading="Start the trip"
+                hint="The traveller reads this out from their app once they are in the cab."
+                buttonTitle="Start trip"
                 loading={action.isPending}
                 disabled={!booking.driverId}
-                onPress={() => run('start')}
+                onSubmit={(code) => run('start', code)}
               />
             ) : null}
             {booking.status === 'IN_PROGRESS' ? (
-              <Button
-                title="Complete trip"
+              <TripCodeEntry
+                heading="Complete the trip"
+                hint="The traveller reads this out from their app at the destination."
+                buttonTitle="Complete trip"
                 loading={action.isPending}
-                onPress={() => run('complete')}
+                onSubmit={(code) => run('complete', code)}
               />
             ) : null}
             {booking.status === 'CONFIRMED' ? (

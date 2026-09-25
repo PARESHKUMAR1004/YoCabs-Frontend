@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 import { brand, spacing } from '@/config/brand';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { useCreateBooking } from '@/features/tourist/hooks';
-import { PriceBreakup } from '@/features/tourist/PriceBreakup';
+import { FareTotal } from '@/features/tourist/FareTotal';
 import { AppText, Button, Card, EmptyState, KeyValue, Screen, SectionHeader } from '@/shared/ui';
 import { showError } from '@/shared/utils/feedback';
 import { formatDateRange, formatMoney } from '@/shared/utils/format';
@@ -56,7 +56,6 @@ export default function Checkout() {
         ))}
         <KeyValue label="To" value={draft.destination?.name ?? '-'} />
         <KeyValue label="Date" value={formatDateRange(draft.startDate, draft.endDate)} />
-        <KeyValue label="Passengers" value={`${draft.passengerCount}`} />
       </Card>
 
       <SectionHeader title="Your cab" />
@@ -70,12 +69,7 @@ export default function Checkout() {
 
       <SectionHeader title="Fare" />
       <Card>
-        <PriceBreakup
-          components={option.price.components}
-          total={option.price.totalAmount}
-          currency={currency}
-          totalLabel="Listed fare"
-        />
+        <FareTotal total={option.price.totalAmount} currency={currency} label="Listed fare" />
         {agreed !== null ? (
           <>
             <KeyValue label="Negotiated price" value={formatMoney(agreed, currency)} emphasise />

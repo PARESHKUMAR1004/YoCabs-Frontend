@@ -49,7 +49,7 @@ Sign-in is by mobile number and one-time code. **Locally the code is printed in 
 4. Mobile (partner) → **Fleet** → add a vehicle → **Where this vehicle works** → add an area covering your pickup → **Set prices** → mark it available; **More → Drivers** → add a driver. A vehicle with no service area never shows up in a search.
 5. Sign out, sign in as a new number → tourist → search, optionally make a price offer, book, pay the token.
    With `EXPO_PUBLIC_SANDBOX_PAYMENTS=true` (the `.env.example` default) the **Pay** button completes the payment through the backend's sandbox gateway. Without it the app says online payment is not enabled, which is what a production build does until a real provider is connected.
-6. Partner → **Bookings** → assign the driver → driver signs in (with the driver's mobile) → start the trip and accept location sharing. Watch the car on the partner's **Fleet map** and the admin console's **Live trips**, then complete the trip.
+6. Partner → **Bookings** → assign the driver → driver signs in (with the driver's mobile). The tourist's app now shows a **6-digit start code** (also on the pop-up that appears when the app is reopened); the driver types it in to start the trip and accepts location sharing. At the end the tourist's app shows a different **completion code** that the driver types in to complete the trip. Watch the car on the partner's **Fleet map** and the admin console's **Live trips**, then complete the trip.
 7. Tourist → rate the trip. Partner → **Wallet**. Admin → dashboard, payments, payouts.
 
 The same journey is automated in `packages/api-client/test/e2e`:

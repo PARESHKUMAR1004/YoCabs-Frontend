@@ -210,7 +210,15 @@ describe.skipIf(!BASE_URL)('marketplace end to end', () => {
 
     const trips = await driver.driver.trips();
     expect(trips.map((t: Booking) => t.id)).toContain(booking.id);
-    expect((await driver.driver.start(booking.id)).status).toBe('IN_PROGRESS');
+    // The tourist reads the start code out; the driver types it in.
+    const startCode = (await tourist.tourist.bookings.get(booking.id)).tripCode;
+    expect(startCode).toMatch(/^\d{6}$/);
+    const wrongCode = (await driver.driver
+      .start(booking.id, '000000x')
+      .catch((e: unknown) => e)) as ApiError;
+    expect(wrongCode).toBeInstanceOf(ApiError);
+    expect(wrongCode.status).toBe(400);
+    expect((await driver.driver.start(booking.id, startCode as string)).status).toBe('IN_PROGRESS');
 
     // ---- the driver shares where the car is, and the partner and admin can watch ----------
     await driver.driver.reportLocation(booking.id, {
@@ -231,7 +239,11 @@ describe.skipIf(!BASE_URL)('marketplace end to end', () => {
     const touristPeek = (await tourist.admin.liveTrips().catch((e: unknown) => e)) as ApiError;
     expect(touristPeek).toBeInstanceOf(ApiError);
 
-    expect((await driver.driver.complete(booking.id)).status).toBe('COMPLETED');
+    const completionCode = (await tourist.tourist.bookings.get(booking.id)).tripCode;
+    expect(completionCode).not.toBe(startCode);
+    expect((await driver.driver.complete(booking.id, completionCode as string)).status).toBe(
+      'COMPLETED',
+    );
 
     // ---- review, settlement, reports -----------------------------------------------------
     const review = await tourist.tourist.bookings.review(booking.id, 5, 'Excellent');

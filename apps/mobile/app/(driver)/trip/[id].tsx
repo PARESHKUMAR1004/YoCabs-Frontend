@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useDriverTrip, useTripAction } from '@/features/driver/hooks';
 import { useTripSharing } from '@/features/driver/useTripSharing';
+import { TripCodeEntry } from '@/features/trip/TripCodeEntry';
 import {
   AppText,
   Badge,
@@ -13,7 +14,7 @@ import {
   SectionHeader,
   Spacer,
 } from '@/shared/ui';
-import { confirmAction, showError } from '@/shared/utils/feedback';
+import { showError } from '@/shared/utils/feedback';
 import { formatDateRange } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
@@ -23,24 +24,25 @@ export default function DriverTrip() {
   const action = useTripAction(id);
   const sharing = useTripSharing(id);
 
-  const run = async (name: 'start' | 'complete') => {
-    const message = name === 'start' ? 'Start this trip now?' : 'Mark this trip as completed?';
-
-    if (!(await confirmAction(name === 'start' ? 'Start trip' : 'Complete trip', message))) {
-      return;
-    }
-
+  const run = async (name: 'start' | 'complete', code: string) => {
     // Location sharing lasts exactly as long as the trip: it starts here and stops on completion.
     if (name === 'start' && !(await sharing.begin())) {
       return;
     }
 
-    action.mutate(name, {
-      onSuccess: () => {
-        if (name === 'complete') void sharing.end();
+    action.mutate(
+      { action: name, code },
+      {
+        onSuccess: () => {
+          if (name === 'complete') void sharing.end();
+        },
+        onError: (error) => {
+          // A wrong code means the trip did not start, so stop tracking the driver again.
+          if (name === 'start') void sharing.end();
+          showError(error, 'That did not work');
+        },
       },
-      onError: (error) => showError(error, 'That did not work'),
-    });
+    );
   };
 
   return (
@@ -71,7 +73,6 @@ export default function DriverTrip() {
           <SectionHeader title="Trip" />
           <Card>
             <KeyValue label="Type" value={tripTypeLabel(trip.tripType)} />
-            <KeyValue label="Passengers" value={`${trip.passengerCount}`} />
             {trip.vehicle ? (
               <KeyValue
                 label="Vehicle"
@@ -91,17 +92,21 @@ export default function DriverTrip() {
           ) : null}
 
           {trip.status === 'CONFIRMED' ? (
-            <Button
-              title="Start trip"
+            <TripCodeEntry
+              heading="Start the trip"
+              hint="Ask the traveller for the start code shown in their YoCabs app."
+              buttonTitle="Start trip"
               loading={action.isPending}
-              onPress={() => void run('start')}
+              onSubmit={(code) => void run('start', code)}
             />
           ) : null}
           {trip.status === 'IN_PROGRESS' ? (
-            <Button
-              title="Complete trip"
+            <TripCodeEntry
+              heading="Complete the trip"
+              hint="At the destination, ask the traveller for the completion code shown in their app."
+              buttonTitle="Complete trip"
               loading={action.isPending}
-              onPress={() => void run('complete')}
+              onSubmit={(code) => void run('complete', code)}
             />
           ) : null}
           <Spacer size="sm" />

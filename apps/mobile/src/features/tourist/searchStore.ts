@@ -10,7 +10,6 @@ interface SearchState extends SearchDraft {
   removeStop: (index: number) => void;
   swapPlaces: () => void;
   setDates: (startDate: string, endDate?: string) => void;
-  setPassengers: (count: number) => void;
   setVehicleCategory: (category: VehicleCategory | undefined) => void;
   setTripType: (tripType: TripType | undefined) => void;
   reset: () => void;
@@ -38,7 +37,6 @@ export const useSearchStore = create<SearchState>((set) => ({
       return { startDate, endDate: end < startDate ? startDate : end };
     }),
 
-  setPassengers: (passengerCount) => set({ passengerCount }),
   setVehicleCategory: (vehicleCategory) => set({ vehicleCategory }),
   setTripType: (tripType) => set({ tripType }),
   reset: () => set({ ...initialDraft() }),
@@ -52,7 +50,6 @@ export function selectDraft(state: SearchState): SearchDraft {
     stops: state.stops,
     startDate: state.startDate,
     endDate: state.endDate,
-    passengerCount: state.passengerCount,
     vehicleCategory: state.vehicleCategory,
     tripType: state.tripType,
   };

@@ -1,45 +1,54 @@
+import { useEffect, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
-import { brand, colors, spacing } from '@/config/brand';
+import { colors, radius, spacing } from '@/config/brand';
+import { useFavouritePlaces } from '@/features/tourist/favouritePlaces';
+import { PlaceSuggestionRow } from '@/features/tourist/PlaceSuggestionRow';
 import { selectDraft, useSearchStore, type PlaceField } from '@/features/tourist/searchStore';
-import { MAX_PASSENGERS, MAX_STOPS, validateDraft } from '@/features/tourist/searchDraft';
+import { validateDraft } from '@/features/tourist/searchDraft';
+import { useCurrentPickup } from '@/features/tourist/useCurrentPickup';
 import { MapCanvas, tripMarkers } from '@/shared/maps';
-import { AppText, Button, Card, ChoiceChips, DateField, Row, Screen, Spacer } from '@/shared/ui';
+import { placeProvider, type Place } from '@/shared/places';
+import { AppText, Button, ChoiceChips, DateField, Screen, Spacer } from '@/shared/ui';
 import { showInfo } from '@/shared/utils/feedback';
 import { toIsoDate } from '@/shared/utils/format';
 import { TRIP_TYPE_OPTIONS, VEHICLE_CATEGORY_OPTIONS } from '@/shared/utils/labels';
 
-function PlaceRow({
-  label,
-  value,
-  onPress,
-}: {
-  label: string;
-  value?: string;
-  onPress: () => void;
-}) {
-  return (
-    <Pressable accessibilityRole="button" onPress={onPress} style={styles.placeRow}>
-      <AppText variant="small" color="textMuted">
-        {label}
-      </AppText>
-      <AppText variant="subheading" color={value ? 'text' : 'textMuted'}>
-        {value ?? 'Tap to choose'}
-      </AppText>
-    </Pressable>
-  );
-}
+const POPULAR_SHOWN = 5;
 
 export default function Home() {
   const store = useSearchStore();
+  const favourites = useFavouritePlaces((state) => state.places);
+  const hydrateFavourites = useFavouritePlaces((state) => state.hydrate);
   const today = toIsoDate(new Date());
+  const locating = useCurrentPickup();
+
+  // Travel dates are only asked for when the trip is not today.
+  const [otherDate, setOtherDate] = useState(store.startDate !== today || store.endDate !== today);
+
+  useEffect(() => {
+    void hydrateFavourites();
+  }, [hydrateFavourites]);
 
   const pick = (field: PlaceField) =>
     router.push({ pathname: '/(tourist)/location-picker', params: { field } });
 
+  function bookForToday() {
+    store.setDates(today, today);
+    setOtherDate(false);
+  }
+
   function search() {
-    const problem = validateDraft(selectDraft(store), today);
+    // A search left open past midnight would otherwise fail on a stale "today".
+    const draft = selectDraft(store);
+    if (!otherDate && draft.startDate !== today) {
+      store.setDates(today, today);
+      draft.startDate = today;
+      draft.endDate = today;
+    }
+
+    const problem = validateDraft(draft, today);
     if (problem) {
       showInfo('Check your trip', problem);
       return;
@@ -48,124 +57,164 @@ export default function Home() {
   }
 
   const pins = tripMarkers(store.pickup, store.destination, store.stops);
+  const quickPicks: Place[] = [
+    ...favourites,
+    ...placeProvider
+      .popular()
+      .filter((place) => !favourites.some((saved) => saved.id === place.id))
+      .slice(0, POPULAR_SHOWN),
+  ];
 
   return (
-    <Screen footer={<Button title="Search cabs" onPress={search} testID="search" />}>
-      <AppText variant="title" color="primary">
-        {brand.name}
-      </AppText>
-      <AppText color="textMuted">Where would you like to go?</AppText>
-      <Spacer />
+    <Screen
+      footer={
+        store.destination ? (
+          <Button title="Search cabs" onPress={search} testID="search" />
+        ) : undefined
+      }
+    >
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Change pickup location"
+        onPress={() => pick('pickup')}
+        style={styles.location}
+      >
+        <View style={styles.locationIcon}>
+          <Ionicons name="locate" size={18} color={colors.primary} />
+        </View>
+        <View style={styles.flex}>
+          <AppText variant="caption" color="textMuted">
+            Your location
+          </AppText>
+          <AppText variant="subheading" numberOfLines={1}>
+            {store.pickup?.name ?? (locating ? 'Finding your location…' : 'Set your pickup')}
+          </AppText>
+        </View>
+        <Ionicons name="chevron-down" size={20} color={colors.textMuted} />
+      </Pressable>
 
-      <Card>
-        <PlaceRow label="From" value={store.pickup?.name} onPress={() => pick('pickup')} />
-        <Row style={styles.swapRow}>
-          <View style={styles.line} />
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Swap pickup and destination"
-            onPress={store.swapPlaces}
-          >
-            <Ionicons name="swap-vertical" size={22} color={colors.primary} />
-          </Pressable>
-        </Row>
-        {store.stops.map((stop, index) => (
-          <Row key={stop.id} style={styles.stopRow}>
-            <AppText style={styles.flex}>
-              Stop {index + 1}: {stop.name}
-            </AppText>
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel={`Remove stop ${index + 1}`}
-              onPress={() => store.removeStop(index)}
-            >
-              <Ionicons name="close-circle" size={20} color={colors.textMuted} />
-            </Pressable>
-          </Row>
-        ))}
-        <PlaceRow label="To" value={store.destination?.name} onPress={() => pick('destination')} />
-        {store.stops.length < MAX_STOPS ? (
-          <Button title="+ Add a stop" variant="ghost" onPress={() => pick('stop')} />
-        ) : null}
-      </Card>
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="Where do you want to go?"
+        onPress={() => pick('destination')}
+        style={styles.search}
+        testID="where-to"
+      >
+        <Ionicons name="search" size={20} color={colors.primary} />
+        <AppText
+          variant="subheading"
+          color={store.destination ? 'text' : 'textMuted'}
+          style={styles.flex}
+          numberOfLines={1}
+        >
+          {store.destination?.name ?? 'Where do you want to go?'}
+        </AppText>
+      </Pressable>
 
-      {pins.length ? (
-        <MapCanvas markers={pins} connect interactive={false} height={180} testID="trip-map" />
+      {store.stops.length ? (
+        <AppText variant="small" color="textMuted" style={styles.via}>
+          Via {store.stops.map((stop) => stop.name).join(', ')}
+        </AppText>
       ) : null}
-      <Spacer size="sm" />
 
-      <DateField
-        label="Travel date"
-        value={store.startDate}
-        minimumDate={today}
-        onChange={(date) => store.setDates(date)}
-      />
-      <DateField
-        label="Return date (same as travel date for a single day)"
-        value={store.endDate}
-        minimumDate={store.startDate}
-        onChange={(date) => store.setDates(store.startDate, date)}
-      />
-
-      <Card>
-        <Row style={styles.between}>
-          <View>
-            <AppText variant="subheading">Passengers</AppText>
-            <AppText variant="small" color="textMuted">
-              Including children
-            </AppText>
-          </View>
-          <Row>
-            <Button
-              title="-"
-              variant="secondary"
-              disabled={store.passengerCount <= 1}
-              onPress={() => store.setPassengers(store.passengerCount - 1)}
-              style={styles.stepper}
+      {!store.destination ? (
+        <View style={styles.suggestions}>
+          <AppText variant="caption" color="textMuted" style={styles.heading}>
+            {favourites.length ? 'Your favourites and popular places' : 'Popular places'}
+          </AppText>
+          {quickPicks.map((place) => (
+            <PlaceSuggestionRow
+              key={place.id}
+              place={place}
+              onChoose={(chosen) => store.setPlace('destination', chosen)}
             />
-            <AppText variant="heading" style={styles.count}>
-              {store.passengerCount}
-            </AppText>
-            <Button
-              title="+"
-              variant="secondary"
-              disabled={store.passengerCount >= MAX_PASSENGERS}
-              onPress={() => store.setPassengers(store.passengerCount + 1)}
-              style={styles.stepper}
-            />
-          </Row>
-        </Row>
-      </Card>
+          ))}
+        </View>
+      ) : (
+        <>
+          {pins.length ? (
+            <MapCanvas markers={pins} connect interactive={false} height={180} testID="trip-map" />
+          ) : null}
+          <Spacer size="sm" />
 
-      <AppText variant="subheading">Vehicle type</AppText>
-      <ChoiceChips
-        options={VEHICLE_CATEGORY_OPTIONS}
-        value={store.vehicleCategory}
-        onChange={store.setVehicleCategory}
-        allowClear
-      />
-      <Spacer size="sm" />
-      <AppText variant="subheading">Trip type</AppText>
-      <ChoiceChips
-        options={TRIP_TYPE_OPTIONS}
-        value={store.tripType}
-        onChange={store.setTripType}
-        allowClear
-      />
-      <AppText variant="small" color="textMuted">
-        Leave both unselected to compare every option.
-      </AppText>
+          {otherDate ? (
+            <>
+              <DateField
+                label="Travel date"
+                value={store.startDate}
+                minimumDate={today}
+                onChange={(date) => store.setDates(date)}
+              />
+              <DateField
+                label="Return date (same as travel date for a single day)"
+                value={store.endDate}
+                minimumDate={store.startDate}
+                onChange={(date) => store.setDates(store.startDate, date)}
+              />
+              <Button title="Book for today instead" variant="ghost" onPress={bookForToday} />
+            </>
+          ) : (
+            <Button
+              title="Book for another date"
+              variant="secondary"
+              onPress={() => setOtherDate(true)}
+              testID="another-date"
+            />
+          )}
+
+          <Spacer size="sm" />
+          <AppText variant="subheading">Vehicle type</AppText>
+          <ChoiceChips
+            options={VEHICLE_CATEGORY_OPTIONS}
+            value={store.vehicleCategory}
+            onChange={store.setVehicleCategory}
+            allowClear
+          />
+          <Spacer size="sm" />
+          <AppText variant="subheading">Trip type</AppText>
+          <ChoiceChips
+            options={TRIP_TYPE_OPTIONS}
+            value={store.tripType}
+            onChange={store.setTripType}
+            allowClear
+          />
+          <AppText variant="small" color="textMuted">
+            Leave both unselected to compare every option.
+          </AppText>
+        </>
+      )}
     </Screen>
   );
 }
 
 const styles = StyleSheet.create({
   flex: { flex: 1 },
-  placeRow: { paddingVertical: spacing.sm },
-  swapRow: { justifyContent: 'flex-end' },
-  line: { flex: 1, height: 1, backgroundColor: colors.border, marginRight: spacing.md },
-  stopRow: { paddingVertical: spacing.xs },
-  between: { justifyContent: 'space-between' },
-  stepper: { minHeight: 40, minWidth: 44, paddingHorizontal: 0 },
-  count: { minWidth: 36, textAlign: 'center' },
+  location: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  locationIcon: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  search: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: 52,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  via: { marginTop: spacing.sm },
+  suggestions: { marginTop: spacing.lg },
+  heading: { marginBottom: spacing.xs },
 });

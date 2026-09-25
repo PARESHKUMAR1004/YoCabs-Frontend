@@ -46,8 +46,7 @@ export default function PartnerNegotiation() {
             </AppText>
             {negotiation.trip ? (
               <AppText color="textMuted">
-                {formatDateRange(negotiation.trip.startDate, negotiation.trip.endDate)} ·{' '}
-                {negotiation.trip.passengerCount} passengers
+                {formatDateRange(negotiation.trip.startDate, negotiation.trip.endDate)}
               </AppText>
             ) : null}
             <Spacer size="sm" />

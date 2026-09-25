@@ -18,7 +18,8 @@ export function useTripAction(id: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (action: 'start' | 'complete') => api.driver[action](id),
+    mutationFn: ({ action, code }: { action: 'start' | 'complete'; code: string }) =>
+      api.driver[action](id, code),
     onSuccess: (trip) => {
       queryClient.setQueryData(keys.driver.trip(id), trip);
       void queryClient.invalidateQueries({ queryKey: keys.driver.trips() });

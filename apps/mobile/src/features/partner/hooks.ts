@@ -60,9 +60,9 @@ export function useBookingAction(bookingId: string) {
         case 'assignDriver':
           return bookings.assignDriver(bookingId, value as string);
         case 'start':
-          return bookings.start(bookingId);
+          return bookings.start(bookingId, value as string);
         case 'complete':
-          return bookings.complete(bookingId);
+          return bookings.complete(bookingId, value as string);
         case 'cancel':
           return bookings.cancel(bookingId, value);
       }

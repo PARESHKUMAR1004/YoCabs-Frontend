@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { ActiveTripPrompt } from '@/features/tourist/ActiveTripPrompt';
 import { RoleGuard } from '@/shared/auth/RoleGuard';
 import { stackScreenOptions } from '@/shared/ui/navigation';
 
@@ -27,6 +28,7 @@ export default function TouristLayout() {
         <Stack.Screen name="support/new" options={{ title: 'New request' }} />
         <Stack.Screen name="support/[id]" options={{ title: 'Support request' }} />
       </Stack>
+      <ActiveTripPrompt />
     </RoleGuard>
   );
 }

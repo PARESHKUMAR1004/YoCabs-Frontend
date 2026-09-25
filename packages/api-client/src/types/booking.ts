@@ -45,6 +45,11 @@ export interface Booking {
   tourist: PersonSummary | null;
   cancellationReason: string | null;
   createdAt: IsoInstant;
+  /**
+   * Tourist only. The code to read out to the driver right now: the start code once a driver is
+   * assigned, the completion code while the trip runs, null otherwise.
+   */
+  tripCode: string | null;
 }
 
 export interface CreateBookingInput {

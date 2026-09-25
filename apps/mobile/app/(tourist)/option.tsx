@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/config/brand';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
-import { PriceBreakup } from '@/features/tourist/PriceBreakup';
+import { FareTotal } from '@/features/tourist/FareTotal';
 import { api } from '@/shared/api/client';
 import {
   AppText,
@@ -16,7 +16,7 @@ import {
   Screen,
   SectionHeader,
 } from '@/shared/ui';
-import { formatMoney, humanize } from '@/shared/utils/format';
+import { humanize } from '@/shared/utils/format';
 import { categoryLabel, tripTypeLabel } from '@/shared/utils/labels';
 
 export default function OptionDetails() {
@@ -100,15 +100,9 @@ export default function OptionDetails() {
         </>
       ) : null}
 
-      <SectionHeader
-        title={`Fare ${formatMoney(option.price.totalAmount, option.price.currency)}`}
-      />
+      <SectionHeader title="Fare" />
       <Card>
-        <PriceBreakup
-          components={option.price.components}
-          total={option.price.totalAmount}
-          currency={option.price.currency}
-        />
+        <FareTotal total={option.price.totalAmount} currency={option.price.currency} />
       </Card>
       <AppText variant="small" color="textMuted">
         You pay only a small token now to confirm. You will not be charged until you confirm the
