@@ -1,0 +1,32 @@
+{
+  "name": "yocabs-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "description": "YoCabs frontend: tourist / travel partner / driver mobile app and admin web, sharing one typed API client.",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "npm run test --workspaces --if-present",
+    "test:e2e": "npm run test:e2e --workspace @yocabs/api-client",
+    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "@types/node": "^22.10.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^15.14.0",
+    "prettier": "^3.4.2",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.70.0"
+  }
+}

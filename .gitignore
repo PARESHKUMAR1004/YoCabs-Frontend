@@ -1,0 +1,32 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+coverage/
+*.tsbuildinfo
+
+# Expo / React Native
+.expo/
+.expo-shared/
+apps/mobile/android/
+apps/mobile/ios/
+*.jks
+*.keystore
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# local environment (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# logs / OS / editors
+npm-debug.log*
+.DS_Store
+Thumbs.db
+.idea/
+*.swp

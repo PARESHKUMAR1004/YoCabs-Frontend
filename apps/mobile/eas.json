@@ -1,0 +1,44 @@
+{
+  "cli": {
+    "version": ">= 16.0.0",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "environment": "development",
+      "developmentClient": true,
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "APP_ENV": "development",
+        "EXPO_PUBLIC_API_BASE_URL": "http://10.0.2.2:8080",
+        "EXPO_PUBLIC_SANDBOX_PAYMENTS": "true"
+      }
+    },
+    "preview": {
+      "environment": "preview",
+      "distribution": "internal",
+      "android": { "buildType": "apk" },
+      "env": {
+        "APP_ENV": "preview",
+        "EXPO_PUBLIC_API_BASE_URL": "https://staging-api.example.com",
+        "EXPO_PUBLIC_SANDBOX_PAYMENTS": "true"
+      }
+    },
+    "production": {
+      "environment": "production",
+      "autoIncrement": true,
+      "android": { "buildType": "app-bundle" },
+      "env": {
+        "APP_ENV": "production",
+        "EXPO_PUBLIC_API_BASE_URL": "https://api.example.com",
+        "EXPO_PUBLIC_SANDBOX_PAYMENTS": "false"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": { "track": "internal", "releaseStatus": "draft" }
+    }
+  }
+}
