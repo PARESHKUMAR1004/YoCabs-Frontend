@@ -82,7 +82,7 @@ export function createTouristApi(http: HttpClient) {
     },
 
     payments: {
-      /** Starts (or resumes) the 5% token payment for a booking awaiting payment. */
+      /** Starts (or resumes) the token payment for a booking awaiting payment. */
       initiate: (bookingId: Uuid) =>
         http.request<Payment>({ method: 'POST', path: `${API}/bookings/${bookingId}/payments` }),
       forBooking: (bookingId: Uuid) =>

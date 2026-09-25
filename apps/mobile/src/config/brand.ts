@@ -5,7 +5,7 @@ export const brand = {
   supportEmail: 'support@yocabs.example',
   currency: 'INR',
   /** Booking token the tourist pays to confirm; the API is authoritative, this is only descriptive copy. */
-  tokenPercentDescription: '5%',
+  tokenPercentDescription: '25%',
 } as const;
 
 export const colors = {
