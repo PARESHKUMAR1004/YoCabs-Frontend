@@ -10,12 +10,30 @@ const isProduction = process.env.APP_ENV === 'production';
 /** Expo Go supplies its own key, so this is only set for development and store builds. */
 const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 
+// `eas init` cannot write into a dynamic config, so the project id lives here.
+const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? 'e30babe5-e8ea-4078-9824-e4bc8df9027e';
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'YoCabs',
   slug: 'yocabs',
   scheme: 'yocabs',
   version: '1.0.0',
+  /**
+   * Over-the-air updates only reach installs whose native code matches, and the app version is
+   * that match: an update published for 1.0.0 is delivered to 1.0.0 builds and to nothing else.
+   * So the rule is simple. Changed JavaScript, screens or assets: publish an update. Changed a
+   * native module, a permission or the Expo SDK: bump `version` and build a new APK, otherwise
+   * the old installs would download JavaScript that expects native code they do not have.
+   */
+  runtimeVersion: { policy: 'appVersion' },
+  updates: {
+    url: `https://u.expo.dev/${EAS_PROJECT_ID}`,
+    // Open straight away with the bundle already on the phone, fetch any newer one in the
+    // background and use it from the next launch. The app never waits on the network to start.
+    checkAutomatically: 'ON_LOAD',
+    fallbackToCacheTimeout: 0,
+  },
   orientation: 'portrait',
   icon: './assets/icon.png',
   userInterfaceStyle: 'light',
@@ -73,7 +91,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ['expo-build-properties', { android: { usesCleartextTraffic: !isProduction } }],
   ],
   extra: {
-    // `eas init` cannot write into a dynamic config, so the project id lives here.
-    eas: { projectId: process.env.EAS_PROJECT_ID ?? 'e30babe5-e8ea-4078-9824-e4bc8df9027e' },
+    eas: { projectId: EAS_PROJECT_ID },
   },
 });

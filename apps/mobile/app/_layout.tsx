@@ -7,11 +7,14 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { bootstrapSession } from '@/shared/auth/session';
 import { useSessionStore } from '@/shared/auth/session.store';
 import { queryClient } from '@/shared/query/queryClient';
+import { useAppUpdates } from '@/shared/updates/useAppUpdates';
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const status = useSessionStore((state) => state.status);
+
+  useAppUpdates();
 
   useEffect(() => {
     void bootstrapSession();

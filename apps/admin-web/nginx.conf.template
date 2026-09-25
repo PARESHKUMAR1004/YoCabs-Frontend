@@ -1,0 +1,41 @@
+server {
+    listen ${PORT};
+    server_name _;
+
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # add_header is not inherited into a location that sets its own, so every location that adds
+    # a header includes this snippet as well; otherwise the headers vanish where they matter.
+    include /etc/nginx/snippets/security-headers.conf;
+
+    # The backend. Same origin for the browser, so no CORS configuration is needed.
+    location /api/ {
+        proxy_pass ${API_UPSTREAM};
+        proxy_ssl_server_name on;
+        proxy_set_header Host ${API_HOST};
+        proxy_set_header X-Forwarded-For $remote_addr;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+        client_max_body_size 25m;
+    }
+
+    # Hashed build output never changes under the same name, so it can be cached for good.
+    location /assets/ {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+        try_files $uri =404;
+    }
+
+    # The shell must always be fetched fresh, or a deploy would not reach people who already
+    # have the old one cached.
+    location = /index.html {
+        include /etc/nginx/snippets/security-headers.conf;
+        add_header Cache-Control "no-cache";
+    }
+
+    # Client-side routes (/partners, /live-trips, ...) fall back to the app.
+    location / {
+        try_files $uri /index.html;
+    }
+}

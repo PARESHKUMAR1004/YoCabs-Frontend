@@ -138,6 +138,34 @@ prices trips from latitude and longitude, so a dropped pin works even when no ad
 Place suggestions come from `shared/places` (a bundled Odisha list plus OpenStreetMap Nominatim);
 swapping in Google Places Autocomplete is a contained change, but that API is billed per request.
 
+## Hosting and updates
+
+**Admin console** runs on Railway as the `admin-web` service, built from `apps/admin-web/Dockerfile`
+(context = repo root, `RAILWAY_DOCKERFILE_PATH=apps/admin-web/Dockerfile`). nginx serves the built
+site and forwards `/api` to the backend, so the browser talks to one origin and no CORS
+configuration is needed. `API_UPSTREAM` and `API_HOST` reference the `api` service's public domain.
+Deploy with `railway up -s admin-web --ci` from the repo root.
+
+**Getting changes onto phones.** There are two different paths, and which one applies depends on
+what changed:
+
+| You changed                                                                     | What happens                                                                                                         | How                                                                                       |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| Screens, logic, styles, copy, images                                            | Delivered **over the air**: installed apps fetch it in the background and use it from their next launch. No new APK. | Push to `main`. CI runs the checks, then `eas update` publishes to the `preview` channel. |
+| A native module, a permission, `app.config.ts` native settings, or the Expo SDK | Needs a **new APK**. An update would be JavaScript that expects native code the old installs do not have.            | Bump `version` in `app.config.ts`, then `eas build --profile preview --platform android`. |
+
+`runtimeVersion` is the app `version`, so an update only ever reaches builds with the same version.
+That is what keeps a native change from being pushed to installs that cannot run it.
+
+One-time setup for automatic publishing: create an access token at expo.dev (Account settings >
+Access tokens) and add it to this repository as the `EXPO_TOKEN` Actions secret. Until it exists the
+publish job skips itself with a notice instead of failing. Updates take their settings
+(`EXPO_PUBLIC_API_BASE_URL` and friends) from the EAS **environment**, not from `eas.json`, so a
+setting added to a build profile also has to be added with `eas env:set --environment preview`.
+
+Publishing to `production` is deliberately manual, so a release is a decision:
+`npx eas update --branch production --environment production`.
+
 ## Publishing to the Play Store
 
 Already in place: package name `com.yocabs.app`, EAS build profiles (`apps/mobile/eas.json`), HTTPS-only production builds (`APP_ENV=production` turns cleartext off).

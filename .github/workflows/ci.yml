@@ -44,3 +44,62 @@ jobs:
         env:
           CI: '1'
           EXPO_NO_TELEMETRY: '1'
+
+  # Ships JavaScript and asset changes to phones over the air, once everything above is green.
+  # Installs pick the update up the next time they open (see src/shared/updates/useAppUpdates).
+  #
+  # Only for changes an update can carry. A native change (a new native module, a permission, the
+  # Expo SDK) needs a new APK and a bumped `version` in app.config.ts: see the note beside
+  # `runtimeVersion` there. Publishing is skipped until an EXPO_TOKEN secret is added.
+  publish-update:
+    needs: verify
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+      EXPO_NO_TELEMETRY: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Did the app change?
+        id: changed
+        run: |
+          before="${{ github.event.before }}"
+          if [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only "$before" "${{ github.sha }}" | grep -qE '^(apps/mobile|packages/api-client)/|^package(-lock)?\.json$'; then
+            echo "app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "app=false" >> "$GITHUB_OUTPUT"
+            echo "Nothing the mobile app depends on changed; no update to publish."
+          fi
+
+      - name: EXPO_TOKEN configured?
+        id: token
+        run: |
+          if [ -n "$EXPO_TOKEN" ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::EXPO_TOKEN is not set, so no over-the-air update was published. Add it under Settings > Secrets and variables > Actions."
+            echo "present=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.changed.outputs.app == 'true' && steps.token.outputs.present == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - name: Install
+        if: steps.changed.outputs.app == 'true' && steps.token.outputs.present == 'true'
+        run: npm ci
+
+      - name: Publish the update to the preview channel
+        if: steps.changed.outputs.app == 'true' && steps.token.outputs.present == 'true'
+        working-directory: apps/mobile
+        # --environment supplies EXPO_PUBLIC_API_BASE_URL and friends from EAS. An update built
+        # without them would ship a broken API address to every phone.
+        run: npx eas update --branch preview --environment preview --message "${{ github.sha }}" --non-interactive

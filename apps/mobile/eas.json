@@ -6,9 +6,12 @@
   "build": {
     "development": {
       "environment": "development",
+      "channel": "development",
       "developmentClient": true,
       "distribution": "internal",
-      "android": { "buildType": "apk" },
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
         "APP_ENV": "development",
         "EXPO_PUBLIC_API_BASE_URL": "http://10.0.2.2:8080",
@@ -17,8 +20,11 @@
     },
     "preview": {
       "environment": "preview",
+      "channel": "preview",
       "distribution": "internal",
-      "android": { "buildType": "apk" },
+      "android": {
+        "buildType": "apk"
+      },
       "env": {
         "APP_ENV": "preview",
         "EXPO_PUBLIC_API_BASE_URL": "https://api-production-ce175.up.railway.app",
@@ -27,8 +33,11 @@
     },
     "production": {
       "environment": "production",
+      "channel": "production",
       "autoIncrement": true,
-      "android": { "buildType": "app-bundle" },
+      "android": {
+        "buildType": "app-bundle"
+      },
       "env": {
         "APP_ENV": "production",
         "EXPO_PUBLIC_API_BASE_URL": "https://api.example.com",
@@ -38,7 +47,10 @@
   },
   "submit": {
     "production": {
-      "android": { "track": "internal", "releaseStatus": "draft" }
+      "android": {
+        "track": "internal",
+        "releaseStatus": "draft"
+      }
     }
   }
 }
