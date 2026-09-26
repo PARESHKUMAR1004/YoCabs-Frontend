@@ -1,12 +1,15 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/config/brand';
 import {
+  CameraDeniedError,
   useAddVehiclePhotos,
   useRemoveVehiclePhoto,
   useVehicleProfile,
+  type PhotoSource,
 } from '@/features/partner/hooks';
-import { AppText, LoadingView } from '@/shared/ui';
+import { AppText, ChoiceSheet, LoadingView } from '@/shared/ui';
 import { confirmAction, showError, showInfo } from '@/shared/utils/feedback';
 import { vehiclePhotoUrl } from './photoUrl';
 
@@ -20,18 +23,27 @@ export function VehiclePhotosSection({ vehicleId }: { vehicleId: string }) {
   const profile = useVehicleProfile(vehicleId);
   const add = useAddVehiclePhotos(vehicleId);
   const remove = useRemoveVehiclePhoto(vehicleId);
+  const [choosing, setChoosing] = useState(false);
 
   if (profile.isPending) return <LoadingView />;
 
   const photos = profile.data?.photos ?? [];
 
-  const onAdd = () =>
-    add.mutate(undefined, {
+  const onAdd = (source: PhotoSource) => {
+    setChoosing(false);
+    add.mutate(source, {
       onSuccess: (count) => {
-        if (count > 0) showInfo('Photos added', 'Travellers can see them now.');
+        if (count > 0) showInfo('Photo added', 'Travellers can see it now.');
       },
-      onError: (error) => showError(error, 'Could not add the photos'),
+      onError: (error) =>
+        error instanceof CameraDeniedError
+          ? showInfo(
+              'Camera is turned off',
+              'Allow the camera for YoCabs in your phone settings, or choose a photo from your gallery instead.',
+            )
+          : showError(error, 'Could not add the photo'),
     });
+  };
 
   const onRemove = async (documentId: string) => {
     const sure = await confirmAction(
@@ -58,7 +70,7 @@ export function VehiclePhotosSection({ vehicleId }: { vehicleId: string }) {
         <Pressable
           accessibilityRole="button"
           accessibilityLabel="Add photos"
-          onPress={onAdd}
+          onPress={() => setChoosing(true)}
           disabled={add.isPending}
           style={[styles.tile, styles.add]}
         >
@@ -100,6 +112,22 @@ export function VehiclePhotosSection({ vehicleId }: { vehicleId: string }) {
           </View>
         ))}
       </ScrollView>
+
+      <ChoiceSheet<PhotoSource>
+        visible={choosing}
+        title="Add a photo"
+        choices={[
+          { value: 'camera', label: 'Take a photo', hint: 'Use the camera now', icon: 'camera' },
+          {
+            value: 'library',
+            label: 'Choose from gallery',
+            hint: 'Pick one or more photos',
+            icon: 'images',
+          },
+        ]}
+        onChoose={onAdd}
+        onClose={() => setChoosing(false)}
+      />
     </View>
   );
 }

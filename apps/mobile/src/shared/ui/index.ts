@@ -9,6 +9,7 @@ export { FormTextField, FormDateField } from './FormFields';
 export { RatingBadge, RatingInput } from './Rating';
 export { BookingCard } from './BookingCard';
 export { CallButton } from './CallButton';
+export { ChoiceSheet } from './ChoiceSheet';
 export { Heading } from './Heading';
 export { BuildStamp } from './BuildStamp';
 export { DialogHost } from './DialogHost';

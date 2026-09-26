@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as DocumentPicker from 'expo-document-picker';
+import * as ImagePicker from 'expo-image-picker';
 import type {
   BookingStatus,
   DateRangeQuery,
@@ -398,29 +398,65 @@ export function useReport<K extends ReportName>(name: K, range?: DateRangeQuery)
   });
 }
 
-/** Lets the partner pick photos from the phone and uploads them to the vehicle, one by one. */
+export type PhotoSource = 'camera' | 'library';
+
+/** The person said no to the camera, so there is nothing to retry: tell them how to allow it. */
+export class CameraDeniedError extends Error {
+  constructor() {
+    super('Camera access was not allowed');
+    this.name = 'CameraDeniedError';
+  }
+}
+
+/**
+ * Shrunk on the phone before it is sent (quality 0.8), so a big camera photo is a fraction of the
+ * upload. The API tidies it further and stands it upright.
+ */
+const PICKER_OPTIONS: ImagePicker.ImagePickerOptions = {
+  mediaTypes: ['images'],
+  quality: 0.8,
+  exif: false,
+};
+
+async function choosePhotos(source: PhotoSource): Promise<ImagePicker.ImagePickerAsset[]> {
+  if (source === 'camera') {
+    const permission = await ImagePicker.requestCameraPermissionsAsync();
+    if (!permission.granted) throw new CameraDeniedError();
+
+    const shot = await ImagePicker.launchCameraAsync(PICKER_OPTIONS);
+    return shot.canceled ? [] : shot.assets;
+  }
+
+  const picked = await ImagePicker.launchImageLibraryAsync({
+    ...PICKER_OPTIONS,
+    allowsMultipleSelection: true,
+    selectionLimit: 10,
+  });
+  return picked.canceled ? [] : picked.assets;
+}
+
+/** Takes a photo with the camera, or picks some from the gallery, and uploads them to the vehicle. */
 export function useAddVehiclePhotos(vehicleId: string) {
   const partnerId = usePartnerId();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async () => {
-      const picked = await DocumentPicker.getDocumentAsync({
-        type: ['image/*'],
-        multiple: true,
-        copyToCacheDirectory: true,
-      });
-      if (picked.canceled) return 0;
+    mutationFn: async (source: PhotoSource) => {
+      const photos = await choosePhotos(source);
 
-      for (const file of picked.assets) {
+      for (const photo of photos) {
         await api.documents.upload({
           ownerType: 'VEHICLE',
           ownerId: vehicleId,
           documentType: 'VEHICLE_PHOTO',
-          file: { uri: file.uri, name: file.name, type: file.mimeType ?? 'image/jpeg' },
+          file: {
+            uri: photo.uri,
+            name: photo.fileName ?? `photo-${Date.now()}.jpg`,
+            type: photo.mimeType ?? 'image/jpeg',
+          },
         });
       }
-      return picked.assets.length;
+      return photos.length;
     },
     // Some photos may have gone up before a later one failed: always show what is there now.
     onSettled: () =>

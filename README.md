@@ -175,7 +175,7 @@ Before the first release:
 1. `eas init`, then set `EAS_PROJECT_ID`; `eas credentials` for the upload keystore.
 2. Set `EXPO_PUBLIC_API_BASE_URL` to the production **https** API in the `production` profile.
 3. Replace the placeholder icon / adaptive icon / splash images in `apps/mobile/assets` with final artwork.
-4. Publish a privacy policy URL (the app collects phone number, name, location on request, and uploaded documents) and complete the Play Console _Data safety_ form.
+4. Publish a privacy policy URL (the app collects phone number, name, location on request, photos taken with the camera and uploaded documents) and complete the Play Console _Data safety_ form.
 5. Set `GOOGLE_MAPS_API_KEY` for the maps, then connect the real providers on the backend and swap the two remaining seams here: `shared/places` (place search; currently a bundled Odisha list + OpenStreetMap Nominatim, which is not for heavy production use) and `features/payment/launcher.ts` (payment sheet).
 6. `eas build -p android --profile production`, then upload the `.aab`.
 

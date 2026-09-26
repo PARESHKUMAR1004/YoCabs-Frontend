@@ -41,7 +41,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'YoCabs',
   slug: 'yocabs',
   scheme: 'yocabs',
-  version: '1.0.0',
+  version: '1.0.1',
   /**
    * Over-the-air updates only reach installs whose native code matches, and the app version is
    * that match: an update published for 1.0.0 is delivered to 1.0.0 builds and to nothing else.
@@ -63,7 +63,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'com.yocabs.app',
     config: googleMapsApiKey ? { googleMaps: { apiKey: googleMapsApiKey } } : undefined,
-    versionCode: 1,
+    versionCode: 2,
     adaptiveIcon: {
       backgroundColor: '#FFF7ED',
       foregroundImage: './assets/android-icon-foreground.png',
@@ -109,6 +109,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           'YoCabs shares a driver’s location with their travel partner while a trip is running.',
         isAndroidBackgroundLocationEnabled: true,
         isAndroidForegroundServiceEnabled: true,
+      },
+    ],
+    [
+      'expo-image-picker',
+      {
+        cameraPermission:
+          'YoCabs uses the camera so a travel partner can photograph their vehicle for travellers.',
+        // Photos are picked with the system photo picker, which needs no storage permission.
+        photosPermission: false,
+        microphonePermission: false,
       },
     ],
     ['expo-build-properties', { android: { usesCleartextTraffic: !isProduction } }],
