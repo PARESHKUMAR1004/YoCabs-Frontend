@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { brand, colors, fonts, radius, spacing } from '@/config/brand';
-import { AppText, Button, Spacer } from '@/shared/ui';
+import { AppText, BuildStamp, Button, Spacer } from '@/shared/ui';
 
 export default function Welcome() {
   return (
@@ -41,6 +41,7 @@ export default function Welcome() {
         <AppText variant="small" align="center" style={styles.footnote}>
           Drivers and partner staff sign in with the mobile number their employer registered.
         </AppText>
+        <BuildStamp onDark />
       </View>
     </SafeAreaView>
   );

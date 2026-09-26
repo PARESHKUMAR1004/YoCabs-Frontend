@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 /**
@@ -12,6 +13,28 @@ const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY;
 
 // `eas init` cannot write into a dynamic config, so the project id lives here.
 const EAS_PROJECT_ID = process.env.EAS_PROJECT_ID ?? 'e30babe5-e8ea-4078-9824-e4bc8df9027e';
+
+/**
+ * Which build this is, so anyone can confirm they are running the latest. The number is the count
+ * of commits in this repository, so it only ever goes up; the hash says exactly which code it is.
+ * A trailing "+" means it was published from a working tree with uncommitted changes.
+ */
+function buildStamp(): { build: string; commit: string; builtAt: string } {
+  const git = (command: string) => execSync(`git ${command}`, { encoding: 'utf8' }).trim();
+  try {
+    const dirty = git('status --porcelain') === '' ? '' : '+';
+    return {
+      build: git('rev-list --count HEAD') + dirty,
+      commit: git('rev-parse --short HEAD'),
+      builtAt: new Date().toISOString(),
+    };
+  } catch {
+    // Not a git checkout (a source archive, say): still say when it was made.
+    return { build: 'dev', commit: 'unknown', builtAt: new Date().toISOString() };
+  }
+}
+
+const stamp = buildStamp();
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
@@ -92,5 +115,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ],
   extra: {
     eas: { projectId: EAS_PROJECT_ID },
+    ...stamp,
   },
 });

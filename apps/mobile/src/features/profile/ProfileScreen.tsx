@@ -2,7 +2,16 @@ import { router, type Href } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { colors, fonts, radius, spacing } from '@/config/brand';
 import { signOut } from '@/shared/auth/session';
-import { AppText, Button, Card, KeyValue, QueryBoundary, Screen, Spacer } from '@/shared/ui';
+import {
+  AppText,
+  BuildStamp,
+  Button,
+  Card,
+  KeyValue,
+  QueryBoundary,
+  Screen,
+  Spacer,
+} from '@/shared/ui';
 import { confirmAction } from '@/shared/utils/feedback';
 import { formatMobile, humanize } from '@/shared/utils/format';
 import { useProfile } from './hooks';
@@ -69,6 +78,7 @@ export function ProfileScreen({ editRoute, supportRoute, extra }: Props) {
             onPress={() => void onSignOut()}
             style={styles.signOut}
           />
+          <BuildStamp />
         </Screen>
       )}
     </QueryBoundary>

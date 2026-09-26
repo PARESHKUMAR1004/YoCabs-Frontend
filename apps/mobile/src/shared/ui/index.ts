@@ -10,4 +10,5 @@ export { RatingBadge, RatingInput } from './Rating';
 export { BookingCard } from './BookingCard';
 export { CallButton } from './CallButton';
 export { Heading } from './Heading';
+export { BuildStamp } from './BuildStamp';
 export { DialogHost } from './DialogHost';
