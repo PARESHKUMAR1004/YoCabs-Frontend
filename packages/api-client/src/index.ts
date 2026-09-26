@@ -9,6 +9,7 @@ export * from './types/trip';
 export * from './types/booking';
 export * from './types/negotiation';
 export * from './types/fleet';
+export * from './types/explore';
 export * from './types/operations';
 export * from './types/admin';
 export * from './types/tracking';

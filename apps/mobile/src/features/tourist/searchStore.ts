@@ -5,7 +5,17 @@ import { initialDraft, MAX_STOPS, type SearchDraft } from './searchDraft';
 
 export type PlaceField = 'pickup' | 'destination' | 'stop';
 
+/** Set when the tourist picked a particular partner or cab from Explore: results narrow to it. */
+export interface OnlyChoice {
+  partnerId: string;
+  partnerName: string;
+  vehicleId?: string;
+  vehicleLabel?: string;
+}
+
 interface SearchState extends SearchDraft {
+  only: OnlyChoice | null;
+  setOnly: (only: OnlyChoice | null) => void;
   setPlace: (field: PlaceField, place: Place) => void;
   removeStop: (index: number) => void;
   swapPlaces: () => void;
@@ -18,6 +28,9 @@ interface SearchState extends SearchDraft {
 /** The search form. In memory only: a fresh app start begins a fresh search. */
 export const useSearchStore = create<SearchState>((set) => ({
   ...initialDraft(),
+  only: null,
+
+  setOnly: (only) => set({ only }),
 
   setPlace: (field, place) =>
     set((state) => {
@@ -39,7 +52,7 @@ export const useSearchStore = create<SearchState>((set) => ({
 
   setVehicleCategory: (vehicleCategory) => set({ vehicleCategory }),
   setTripType: (tripType) => set({ tripType }),
-  reset: () => set({ ...initialDraft() }),
+  reset: () => set({ ...initialDraft(), only: null }),
 }));
 
 /** The draft part of the store as a plain object. */

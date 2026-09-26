@@ -2,6 +2,7 @@ import type { HttpClient } from '../core/http';
 import { newId } from '../core/http';
 import type { Booking, CreateBookingInput, PartnerRating, Payment, Review } from '../types/booking';
 import type { Uuid } from '../types/common';
+import type { ExplorePartner, ExplorePartnerDetail } from '../types/explore';
 import type { Negotiation } from '../types/negotiation';
 import type { TripLocation, TripRoute } from '../types/tracking';
 import type {
@@ -110,6 +111,22 @@ export function createTouristApi(http: HttpClient) {
     /** The journey (pickup, stops, destination) with coordinates, for the live map. */
     tripRoute: (bookingId: Uuid) =>
       http.request<TripRoute>({ path: `${API}/bookings/${bookingId}/route` }),
+
+    /** Travel partners with vehicles working around a place. Public: no sign-in needed. */
+    explore: {
+      partners: (latitude: number, longitude: number) =>
+        http.request<ExplorePartner[]>({
+          path: `${API}/explore/partners`,
+          query: { latitude, longitude },
+          auth: false,
+        }),
+      partner: (partnerId: Uuid, latitude: number, longitude: number) =>
+        http.request<ExplorePartnerDetail>({
+          path: `${API}/explore/partners/${partnerId}`,
+          query: { latitude, longitude },
+          auth: false,
+        }),
+    },
 
     partnerRating: (partnerId: Uuid) =>
       http.request<PartnerRating>({ path: `${API}/travel-partners/${partnerId}/rating` }),

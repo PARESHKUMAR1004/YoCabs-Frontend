@@ -7,6 +7,7 @@ import { useFavouritePlaces } from '@/features/tourist/favouritePlaces';
 import { PlaceSuggestionRow } from '@/features/tourist/PlaceSuggestionRow';
 import { selectDraft, useSearchStore, type PlaceField } from '@/features/tourist/searchStore';
 import { validateDraft } from '@/features/tourist/searchDraft';
+import { ExploreSection } from '@/features/explore/ExploreSection';
 import { useCurrentPickup } from '@/features/tourist/useCurrentPickup';
 import { MapCanvas, tripMarkers } from '@/shared/maps';
 import { placeProvider, type Place } from '@/shared/places';
@@ -132,6 +133,30 @@ export default function Home() {
         </AppText>
       ) : null}
 
+      {store.only ? (
+        <View style={styles.only}>
+          <View style={styles.flex}>
+            <AppText variant="caption" color="primary">
+              Booking with
+            </AppText>
+            <AppText variant="subheading" color="textOnPrimary" numberOfLines={1}>
+              {store.only.vehicleLabel ? `${store.only.vehicleLabel} · ` : ''}
+              {store.only.partnerName}
+            </AppText>
+          </View>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Stop booking with this partner"
+            hitSlop={8}
+            onPress={() => store.setOnly(null)}
+          >
+            <Ionicons name="close-circle" size={24} color={colors.primary} />
+          </Pressable>
+        </View>
+      ) : !store.destination ? (
+        <ExploreSection pickup={store.pickup} />
+      ) : null}
+
       {!store.destination ? (
         <View style={styles.suggestions}>
           <AppText variant="caption" color="textMuted" style={styles.heading}>
@@ -235,6 +260,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     borderRadius: radius.lg,
     backgroundColor: colors.card,
+  },
+  only: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    backgroundColor: colors.ink,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    marginBottom: spacing.lg,
   },
   via: { marginTop: spacing.sm },
   suggestions: { marginTop: spacing.lg },

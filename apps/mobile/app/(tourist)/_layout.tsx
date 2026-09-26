@@ -12,6 +12,7 @@ export default function TouristLayout() {
           name="location-picker"
           options={{ title: 'Choose a place', presentation: 'modal' }}
         />
+        <Stack.Screen name="partner/[id]" options={{ title: 'Travel partner' }} />
         <Stack.Screen name="results" options={{ title: 'Available cabs' }} />
         <Stack.Screen name="option" options={{ title: 'Vehicle details' }} />
         <Stack.Screen name="negotiate" options={{ title: 'Ask for a better price' }} />
