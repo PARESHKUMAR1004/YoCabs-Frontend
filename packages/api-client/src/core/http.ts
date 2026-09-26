@@ -145,7 +145,12 @@ export class HttpClient {
       if ((error as { name?: string }).name === 'AbortError') {
         throw new ApiError(0, 'TIMEOUT', 'The request took too long');
       }
-      throw new ApiError(0, 'NETWORK_ERROR', 'Network request failed');
+      const reason = (error as { message?: string }).message;
+      throw new ApiError(
+        0,
+        'NETWORK_ERROR',
+        reason ? `Network request failed: ${reason}` : 'Network request failed',
+      );
     } finally {
       clearTimeout(timer);
     }

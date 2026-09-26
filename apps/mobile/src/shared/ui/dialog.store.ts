@@ -7,6 +7,8 @@ export interface DialogRequest {
   tone: DialogTone;
   title: string;
   message?: string;
+  /** Small print for support: the technical reason behind an error. */
+  detail?: string;
   confirmLabel: string;
   /** Present only on questions; a notice has just the one button. */
   cancelLabel?: string;

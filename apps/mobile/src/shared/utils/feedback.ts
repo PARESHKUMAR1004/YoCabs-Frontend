@@ -20,8 +20,8 @@ export function confirmAction(
   return ask({ tone: 'confirm', title, message, confirmLabel, cancelLabel: 'Cancel', destructive });
 }
 
-export function showError(error: unknown, title = 'Something went wrong'): void {
-  void ask({ tone: 'error', title, message: userMessage(error), confirmLabel: 'OK' });
+export function showError(error: unknown, title = 'Something went wrong', detail?: string): void {
+  void ask({ tone: 'error', title, message: userMessage(error), detail, confirmLabel: 'OK' });
 }
 
 export function showInfo(title: string, message?: string): void {
