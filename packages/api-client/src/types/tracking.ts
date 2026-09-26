@@ -8,6 +8,11 @@ export interface TripLocation {
   accuracyMetres: number | null;
   speedKph: number | null;
   recordedAt: IsoInstant;
+  /** How far the car still has to go, by road, when the API could work it out. */
+  remainingDistanceKm?: number | null;
+  remainingMinutes?: number | null;
+  /** The whole journey's length, so an app can show progress. */
+  tripDistanceKm?: number | null;
 }
 
 export interface ReportLocationInput {

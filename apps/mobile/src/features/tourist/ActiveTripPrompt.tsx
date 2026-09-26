@@ -57,7 +57,7 @@ export function ActiveTripPrompt() {
               {ongoing.pickup} → {ongoing.destination}
             </AppText>
 
-            {ongoing.driver ? (
+            {ongoing.driver && !started ? (
               <Card>
                 <AppText variant="small" color="textMuted">
                   Your driver
@@ -73,7 +73,7 @@ export function ActiveTripPrompt() {
               </Card>
             ) : null}
 
-            {started ? <LiveTripMap bookingId={ongoing.id} height={220} /> : null}
+            {started ? <LiveTripMap bookingId={ongoing.id} booking={ongoing} height={220} /> : null}
 
             {ongoing.tripCode ? <TripCodeCard code={ongoing.tripCode} /> : null}
 

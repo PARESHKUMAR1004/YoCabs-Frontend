@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ElementRef } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -25,6 +25,9 @@ const PIN_COLORS: Record<MarkerKind, string> = {
   vehicle: colors.ink,
 };
 
+/** The car is reported every few seconds; it glides between reports instead of jumping. */
+const GLIDE_MS = 7_000;
+
 /** Degrees of latitude per kilometre; good enough to frame a service-area circle. */
 const KM_IN_DEGREES = 1 / 111;
 
@@ -40,6 +43,42 @@ function circleCorners(circle: MapCircle): Coordinate[] {
     { latitude: circle.latitude + latitudeSpan, longitude: circle.longitude + longitudeSpan },
     { latitude: circle.latitude - latitudeSpan, longitude: circle.longitude - longitudeSpan },
   ];
+}
+
+/** The moving car: drawn once, then animated to each new position the driver reports. */
+function VehicleMarker({ marker }: { marker: MapMarker }) {
+  const ref = useRef<ElementRef<typeof Marker>>(null);
+  // The marker is created where the car first appeared; every later position is animated to.
+  const first = useRef<Coordinate>({ latitude: marker.latitude, longitude: marker.longitude });
+  const [drawn, setDrawn] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDrawn(true), 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // animateMarkerToCoordinate exists on Android only; elsewhere the car simply hops.
+    ref.current?.animateMarkerToCoordinate?.(
+      { latitude: marker.latitude, longitude: marker.longitude },
+      GLIDE_MS,
+    );
+  }, [marker.latitude, marker.longitude]);
+
+  return (
+    <Marker
+      ref={ref}
+      coordinate={first.current}
+      title={marker.label}
+      anchor={{ x: 0.5, y: 0.5 }}
+      // A custom view is captured as an image; keep it live only until it has been drawn.
+      tracksViewChanges={!drawn}
+    >
+      <View style={styles.vehicle}>
+        <Ionicons name="car-sport" size={18} color={colors.textOnPrimary} />
+      </View>
+    </Marker>
+  );
 }
 
 interface Props {
@@ -184,18 +223,7 @@ export function MapCanvas({
 
           {markers.map((marker) =>
             marker.kind === 'vehicle' ? (
-              <Marker
-                key={marker.id}
-                coordinate={marker}
-                title={marker.label}
-                anchor={{ x: 0.5, y: 0.5 }}
-                // A custom view is drawn once and cached unless told otherwise.
-                tracksViewChanges
-              >
-                <View style={styles.vehicle}>
-                  <Ionicons name="car-sport" size={18} color={colors.textOnPrimary} />
-                </View>
-              </Marker>
+              <VehicleMarker key={marker.id} marker={marker} />
             ) : (
               <Marker
                 key={marker.id}

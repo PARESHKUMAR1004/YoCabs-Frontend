@@ -32,6 +32,9 @@ export function createDocumentsApi(http: HttpClient) {
     },
 
     /** Authenticated download of a private document. */
+    /** Removes a vehicle photo. Other documents cannot be removed. */
+    remove: (documentId: Uuid) =>
+      http.request<void>({ method: 'DELETE', path: `${API}/documents/${documentId}` }),
     content: (documentId: Uuid) =>
       http.requestBlob({ path: `${API}/documents/${documentId}/content` }),
   };

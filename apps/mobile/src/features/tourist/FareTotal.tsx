@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
   },
   label: { color: colors.primary, textTransform: 'uppercase', letterSpacing: 2 },
   amount: {
-    fontFamily: fonts.display,
-    fontSize: 38,
-    lineHeight: 46,
+    fontFamily: fonts.figure,
+    fontSize: 40,
+    lineHeight: 48,
     color: colors.textOnPrimary,
     marginVertical: spacing.xs,
   },

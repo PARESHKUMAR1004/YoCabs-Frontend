@@ -48,6 +48,9 @@ export const fonts = {
   medium: 'Manrope_500Medium',
   semibold: 'Manrope_600SemiBold',
   bold: 'Manrope_700Bold',
+  /** Simple, round figures for money and codes. */
+  figure: 'Nunito_800ExtraBold',
+  figureSemi: 'Nunito_700Bold',
 } as const;
 
 export const typography = {
@@ -55,6 +58,7 @@ export const typography = {
   heading: { fontFamily: fonts.displaySemi, fontSize: 19, lineHeight: 26, letterSpacing: -0.2 },
   subheading: { fontFamily: fonts.semibold, fontSize: 16, lineHeight: 22 },
   body: { fontFamily: fonts.body, fontSize: 15, lineHeight: 22 },
+  figure: { fontFamily: fonts.figure, fontSize: 20, lineHeight: 26 },
   caption: { fontFamily: fonts.medium, fontSize: 13, lineHeight: 18, letterSpacing: 0.2 },
   small: { fontFamily: fonts.body, fontSize: 12, lineHeight: 17 },
 } as const;

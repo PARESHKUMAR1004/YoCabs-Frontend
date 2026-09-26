@@ -122,7 +122,7 @@ export function KeyValue({
         {label}
       </AppText>
       {typeof value === 'string' || typeof value === 'number' ? (
-        <AppText variant={emphasise ? 'heading' : 'body'}>{value}</AppText>
+        <AppText variant={emphasise ? 'figure' : 'body'}>{value}</AppText>
       ) : (
         value
       )}

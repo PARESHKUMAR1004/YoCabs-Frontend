@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import * as DocumentPicker from 'expo-document-picker';
 import type {
   BookingStatus,
   DateRangeQuery,
@@ -394,5 +395,50 @@ export function useReport<K extends ReportName>(name: K, range?: DateRangeQuery)
           range?: DateRangeQuery,
         ) => Promise<ReportResult<K>>
       )(partnerId, range),
+  });
+}
+
+/** Lets the partner pick photos from the phone and uploads them to the vehicle, one by one. */
+export function useAddVehiclePhotos(vehicleId: string) {
+  const partnerId = usePartnerId();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const picked = await DocumentPicker.getDocumentAsync({
+        type: ['image/*'],
+        multiple: true,
+        copyToCacheDirectory: true,
+      });
+      if (picked.canceled) return 0;
+
+      for (const file of picked.assets) {
+        await api.documents.upload({
+          ownerType: 'VEHICLE',
+          ownerId: vehicleId,
+          documentType: 'VEHICLE_PHOTO',
+          file: { uri: file.uri, name: file.name, type: file.mimeType ?? 'image/jpeg' },
+        });
+      }
+      return picked.assets.length;
+    },
+    // Some photos may have gone up before a later one failed: always show what is there now.
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: keys.partner.vehicleProfile(partnerId, vehicleId),
+      }),
+  });
+}
+
+export function useRemoveVehiclePhoto(vehicleId: string) {
+  const partnerId = usePartnerId();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (documentId: string) => api.documents.remove(documentId),
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: keys.partner.vehicleProfile(partnerId, vehicleId),
+      }),
   });
 }

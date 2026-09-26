@@ -1,5 +1,6 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { DocumentsSection } from '@/features/documents/DocumentsSection';
+import { VehiclePhotosSection } from '@/features/vehicles/VehiclePhotosSection';
 import { useChangeVehicleStatus, useVehicle } from '@/features/partner/hooks';
 import {
   AppText,
@@ -113,6 +114,9 @@ export default function VehicleDetail() {
               <Button title="Deactivate" variant="danger" onPress={() => void deactivate()} />
             </>
           ) : null}
+
+          <SectionHeader title="Photos travellers see" />
+          <VehiclePhotosSection vehicleId={vehicle.id} />
 
           <SectionHeader title="Documents" />
           <DocumentsSection

@@ -66,7 +66,7 @@ export default function BookingDetail() {
           {booking.status === 'IN_PROGRESS' ? (
             <>
               <SectionHeader title="Your trip, live" />
-              <LiveTripMap bookingId={booking.id} />
+              <LiveTripMap bookingId={booking.id} booking={booking} />
             </>
           ) : null}
 

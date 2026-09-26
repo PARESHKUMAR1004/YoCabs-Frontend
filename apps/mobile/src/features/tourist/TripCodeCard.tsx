@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
     marginVertical: spacing.md,
   },
   digits: {
-    fontFamily: fonts.display,
+    fontFamily: fonts.figure,
     fontSize: 34,
     lineHeight: 42,
     letterSpacing: 10,

@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import { Image, ScrollView, StyleSheet, View } from 'react-native';
-import { colors, radius, spacing } from '@/config/brand';
+import { StyleSheet, View } from 'react-native';
+import { spacing } from '@/config/brand';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { FareTotal } from '@/features/tourist/FareTotal';
-import { api } from '@/shared/api/client';
+import { PhotoGallery } from '@/features/vehicles/PhotoGallery';
 import {
   AppText,
   Badge,
@@ -52,18 +52,7 @@ export default function OptionDetails() {
         </View>
       }
     >
-      {option.photos.length > 0 ? (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.photos}>
-          {option.photos.map((path) => (
-            <Image
-              key={path}
-              source={{ uri: api.assetUrl(path) }}
-              style={styles.photo}
-              resizeMode="cover"
-            />
-          ))}
-        </ScrollView>
-      ) : null}
+      <PhotoGallery paths={option.photos} />
 
       <AppText variant="title">
         {option.make} {option.model}
@@ -112,14 +101,6 @@ export default function OptionDetails() {
 const styles = StyleSheet.create({
   flex: { flex: 1 },
   actions: { flexDirection: 'row', gap: spacing.md },
-  photos: { marginBottom: spacing.md },
-  photo: {
-    width: 280,
-    height: 170,
-    borderRadius: radius.lg,
-    marginRight: spacing.md,
-    backgroundColor: colors.surface,
-  },
   meta: { justifyContent: 'space-between', marginBottom: spacing.sm },
   badges: { gap: spacing.sm, marginBottom: spacing.md },
   facilities: { flexWrap: 'wrap', gap: spacing.sm },

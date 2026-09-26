@@ -36,7 +36,7 @@ export function BookingCard({ booking, onPress, counterparty }: Props) {
         <AppText variant="small" color="textMuted" style={styles.route}>
           {counterparty ?? ''}
         </AppText>
-        <AppText variant="heading">{formatMoney(booking.totalAmount, booking.currency)}</AppText>
+        <AppText variant="figure">{formatMoney(booking.totalAmount, booking.currency)}</AppText>
       </Row>
     </Card>
   );
