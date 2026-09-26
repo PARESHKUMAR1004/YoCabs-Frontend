@@ -28,13 +28,16 @@ export function createDocumentsApi(http: HttpClient) {
         method: 'POST',
         path: `${API}/documents`,
         formData: form,
+        // A phone photo over mobile data can take a while.
+        timeoutMs: 180_000,
       });
     },
 
-    /** Authenticated download of a private document. */
     /** Removes a vehicle photo. Other documents cannot be removed. */
     remove: (documentId: Uuid) =>
       http.request<void>({ method: 'DELETE', path: `${API}/documents/${documentId}` }),
+
+    /** Authenticated download of a private document. */
     content: (documentId: Uuid) =>
       http.requestBlob({ path: `${API}/documents/${documentId}/content` }),
   };

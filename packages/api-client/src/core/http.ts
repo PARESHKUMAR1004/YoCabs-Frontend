@@ -19,6 +19,8 @@ export interface RequestOptions {
   query?: Query;
   body?: unknown;
   formData?: FormData;
+  /** Overrides the client's default timeout, e.g. for a photo upload on a slow connection. */
+  timeoutMs?: number;
   headers?: Record<string, string>;
   /** Default true. Set false for public endpoints (login, search). */
   auth?: boolean;
@@ -127,7 +129,10 @@ export class HttpClient {
     }
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), this.config.timeoutMs ?? 20_000);
+    const timer = setTimeout(
+      () => controller.abort(),
+      options.timeoutMs ?? this.config.timeoutMs ?? 20_000,
+    );
 
     try {
       return await this.fetchImpl(this.url(options.path, options.query), {
