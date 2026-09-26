@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/config/brand';
 import {
-  PhotoUploadError,
   useAddVehiclePhotos,
   useRemoveVehiclePhoto,
   useVehicleProfile,
@@ -31,10 +30,7 @@ export function VehiclePhotosSection({ vehicleId }: { vehicleId: string }) {
       onSuccess: (count) => {
         if (count > 0) showInfo('Photos added', 'Travellers can see them now.');
       },
-      onError: (error) =>
-        error instanceof PhotoUploadError
-          ? showError(error.reason, 'Could not add the photos', error.detail)
-          : showError(error, 'Could not add the photos'),
+      onError: (error) => showError(error, 'Could not add the photos'),
     });
 
   const onRemove = async (documentId: string) => {

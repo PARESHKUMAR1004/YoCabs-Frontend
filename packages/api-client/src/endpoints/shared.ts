@@ -10,7 +10,7 @@ export function createDocumentsApi(http: HttpClient) {
     list: (ownerType: DocumentOwnerType, ownerId: Uuid) =>
       http.request<DocumentRecord[]>({ path: `${API}/documents`, query: { ownerType, ownerId } }),
 
-    upload(input: UploadDocumentInput): Promise<DocumentRecord> {
+    async upload(input: UploadDocumentInput): Promise<DocumentRecord> {
       const form = new FormData();
       form.append('ownerType', input.ownerType);
       form.append('ownerId', input.ownerId);
@@ -18,8 +18,11 @@ export function createDocumentsApi(http: HttpClient) {
       if (input.expiryDate) form.append('expiryDate', input.expiryDate);
 
       if ('uri' in input.file) {
-        // React Native reads the file from its uri; the cast satisfies the DOM FormData typing.
-        form.append('file', input.file as unknown as Blob);
+        // Current React Native networking will not stream a file from its path, so the file is
+        // read in and sent as bytes. Bytes read this way carry no type of their own, and the API
+        // checks it, so the type is put back on.
+        const bytes = await (await fetch(input.file.uri)).blob();
+        form.append('file', bytes.slice(0, bytes.size, input.file.type), input.file.name);
       } else {
         form.append('file', input.file, input.filename ?? 'upload');
       }

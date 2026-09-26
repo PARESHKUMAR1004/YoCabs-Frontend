@@ -11,7 +11,6 @@ import type {
   VehicleInput,
   VehicleProfileInput,
 } from '@yocabs/api-client';
-import { isApiError } from '@yocabs/api-client';
 import { api } from '@/shared/api/client';
 import { useSessionStore } from '@/shared/auth/session.store';
 import { keys } from '@/shared/query/keys';
@@ -399,52 +398,6 @@ export function useReport<K extends ReportName>(name: K, range?: DateRangeQuery)
   });
 }
 
-/** A photo that could not be uploaded, with what is needed to work out why. */
-export class PhotoUploadError extends Error {
-  constructor(
-    readonly reason: unknown,
-    readonly detail: string,
-  ) {
-    super('Photo upload failed');
-    this.name = 'PhotoUploadError';
-  }
-}
-
-const describe = (error: unknown) => (error instanceof Error ? error.message : String(error));
-
-/**
- * Sends one photo. Streaming the file straight from its path is tried first; if the phone's
- * networking cannot do that, the file is read in and its bytes are sent instead.
- */
-async function uploadPhoto(vehicleId: string, file: DocumentPicker.DocumentPickerAsset) {
-  const common = {
-    ownerType: 'VEHICLE',
-    ownerId: vehicleId,
-    documentType: 'VEHICLE_PHOTO',
-  } as const;
-  const name = file.name || 'photo.jpg';
-  const type = file.mimeType ?? 'image/jpeg';
-  const facts = `${name} · ${type} · ${file.size ?? '?'} bytes · ${file.uri.split(':')[0]}://`;
-
-  try {
-    return await api.documents.upload({ ...common, file: { uri: file.uri, name, type } });
-  } catch (first) {
-    if (!isApiError(first) || first.code !== 'NETWORK_ERROR') {
-      throw new PhotoUploadError(first, facts);
-    }
-
-    try {
-      const bytes = await (await fetch(file.uri)).blob();
-      return await api.documents.upload({ ...common, file: bytes, filename: name });
-    } catch (second) {
-      throw new PhotoUploadError(
-        second,
-        `${facts}\nfrom path: ${describe(first)}\nfrom bytes: ${describe(second)}`,
-      );
-    }
-  }
-}
-
 /** Lets the partner pick photos from the phone and uploads them to the vehicle, one by one. */
 export function useAddVehiclePhotos(vehicleId: string) {
   const partnerId = usePartnerId();
@@ -460,7 +413,12 @@ export function useAddVehiclePhotos(vehicleId: string) {
       if (picked.canceled) return 0;
 
       for (const file of picked.assets) {
-        await uploadPhoto(vehicleId, file);
+        await api.documents.upload({
+          ownerType: 'VEHICLE',
+          ownerId: vehicleId,
+          documentType: 'VEHICLE_PHOTO',
+          file: { uri: file.uri, name: file.name, type: file.mimeType ?? 'image/jpeg' },
+        });
       }
       return picked.assets.length;
     },

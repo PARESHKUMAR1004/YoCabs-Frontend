@@ -172,7 +172,7 @@ export interface DocumentRecord {
   createdAt: IsoInstant;
 }
 
-/** A browser Blob/File, or the {uri,name,type} object React Native's FormData understands. */
+/** A browser Blob/File, or a file on a phone described by its path, name and type. */
 export type UploadFile = Blob | { uri: string; name: string; type: string };
 
 export interface UploadDocumentInput {

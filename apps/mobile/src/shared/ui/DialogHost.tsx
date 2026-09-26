@@ -57,18 +57,6 @@ export function DialogHost() {
             </AppText>
           ) : null}
 
-          {request.detail ? (
-            <AppText
-              variant="small"
-              color="textMuted"
-              align="center"
-              selectable
-              style={styles.detail}
-            >
-              {request.detail}
-            </AppText>
-          ) : null}
-
           <View style={styles.actions}>
             <Button
               title={request.confirmLabel}
@@ -129,6 +117,5 @@ const styles = StyleSheet.create({
   },
   title: { marginBottom: spacing.sm },
   message: { marginBottom: spacing.lg },
-  detail: { marginBottom: spacing.lg, opacity: 0.8 },
   actions: { alignSelf: 'stretch', marginTop: spacing.sm },
 });
