@@ -89,6 +89,15 @@ export function useNegotiation(id: string | null) {
   });
 }
 
+/** The tourist's own price offers. Refreshed often: a partner's answer is worth seeing quickly. */
+export function useMyNegotiations() {
+  return useQuery({
+    queryKey: keys.tourist.negotiations(),
+    queryFn: () => api.tourist.negotiations.mine(),
+    refetchInterval: 20_000,
+  });
+}
+
 export function useStartNegotiation() {
   const setNegotiation = useBookingFlow((state) => state.setNegotiation);
 

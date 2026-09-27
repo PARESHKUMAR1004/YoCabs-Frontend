@@ -30,3 +30,16 @@ export function useExplorePartner(id: string, place: Place | null) {
     enabled: place !== null,
   });
 }
+
+/** Every cab working around the place, so they can be grouped by model. */
+export function useExploreVehicles(place: Place | null) {
+  const latitude = place ? nearby(place.latitude) : 0;
+  const longitude = place ? nearby(place.longitude) : 0;
+
+  return useQuery({
+    queryKey: keys.explore.vehicles(latitude, longitude),
+    queryFn: () => api.tourist.explore.vehicles(latitude, longitude),
+    enabled: place !== null,
+    staleTime: 2 * 60_000,
+  });
+}

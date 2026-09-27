@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { PartnerOffers } from '@/features/negotiation/PartnerOffers';
 import { ApprovalBanner } from '@/features/partner/ApprovalBanner';
 import { usePartner, usePartnerNegotiations, useReport } from '@/features/partner/hooks';
 import { AppText, Button, Card, KeyValue, LoadingView, Screen, SectionHeader } from '@/shared/ui';
@@ -7,7 +8,7 @@ import { formatMoney } from '@/shared/utils/format';
 export default function PartnerDashboard() {
   const partner = usePartner();
   const earnings = useReport('earnings');
-  const offers = usePartnerNegotiations('OFFER_SENT');
+  const offers = usePartnerNegotiations();
 
   const refresh = () => {
     void partner.refetch();
@@ -18,21 +19,13 @@ export default function PartnerDashboard() {
   if (partner.isPending) return <LoadingView />;
 
   const report = earnings.data;
-  const pendingOffers = offers.data?.length ?? 0;
 
   return (
     <Screen refreshing={partner.isRefetching} onRefresh={refresh}>
       <AppText variant="title">{partner.data?.name ?? 'Dashboard'}</AppText>
       <ApprovalBanner />
 
-      {pendingOffers > 0 ? (
-        <Card onPress={() => router.push('/(partner)/negotiations')}>
-          <AppText variant="subheading" color="info">
-            {pendingOffers} price offer{pendingOffers === 1 ? '' : 's'} waiting for your answer
-          </AppText>
-          <AppText color="textMuted">Tap to review.</AppText>
-        </Card>
-      ) : null}
+      <PartnerOffers />
 
       <SectionHeader title="Earnings" />
       <Card>

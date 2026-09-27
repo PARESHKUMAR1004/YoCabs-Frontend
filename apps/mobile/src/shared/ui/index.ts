@@ -11,5 +11,6 @@ export { BookingCard } from './BookingCard';
 export { CallButton } from './CallButton';
 export { ChoiceSheet } from './ChoiceSheet';
 export { Heading } from './Heading';
+export { Logo } from './Logo';
 export { BuildStamp } from './BuildStamp';
 export { DialogHost } from './DialogHost';

@@ -1,4 +1,5 @@
 import { execSync } from 'node:child_process';
+import { existsSync } from 'node:fs';
 import type { ConfigContext, ExpoConfig } from 'expo/config';
 
 /**
@@ -36,12 +37,17 @@ function buildStamp(): { build: string; commit: string; builtAt: string } {
 
 const stamp = buildStamp();
 
+/** Firebase's config for Android push: an EAS file variable in the cloud, a local file otherwise. */
+const googleServicesFile =
+  process.env.GOOGLE_SERVICES_JSON ??
+  (existsSync('./google-services.json') ? './google-services.json' : undefined);
+
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
   name: 'YoCabs',
   slug: 'yocabs',
   scheme: 'yocabs',
-  version: '1.0.1',
+  version: '1.0.2',
   /**
    * Over-the-air updates only reach installs whose native code matches, and the app version is
    * that match: an update published for 1.0.0 is delivered to 1.0.0 builds and to nothing else.
@@ -63,9 +69,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   android: {
     package: 'com.yocabs.app',
     config: googleMapsApiKey ? { googleMaps: { apiKey: googleMapsApiKey } } : undefined,
-    versionCode: 2,
+    versionCode: 3,
+    // Push notifications on Android go through Firebase. The file comes from the Firebase project
+    // (see the README); without it the app still runs, it just cannot receive push messages.
+    googleServicesFile: googleServicesFile,
     adaptiveIcon: {
-      backgroundColor: '#FFF7ED',
+      backgroundColor: '#0B1220',
       foregroundImage: './assets/android-icon-foreground.png',
       backgroundImage: './assets/android-icon-background.png',
       monochromeImage: './assets/android-icon-monochrome.png',
@@ -97,7 +106,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         image: './assets/splash-icon.png',
         imageWidth: 200,
         resizeMode: 'contain',
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#0B1220',
       },
     ],
     [
@@ -109,6 +118,24 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
           'YoCabs shares a driver’s location with their travel partner while a trip is running.',
         isAndroidBackgroundLocationEnabled: true,
         isAndroidForegroundServiceEnabled: true,
+      },
+    ],
+    [
+      'expo-notifications',
+      {
+        icon: './assets/notification-icon.png',
+        color: '#B08D57',
+        defaultChannel: 'updates',
+        // One sound per kind of news; see features/notifications/push/channelMap.ts.
+        sounds: [
+          './assets/sounds/bookings.wav',
+          './assets/sounds/offers.wav',
+          './assets/sounds/trips.wav',
+          './assets/sounds/payments.wav',
+          './assets/sounds/alerts.wav',
+          './assets/sounds/support.wav',
+          './assets/sounds/updates.wav',
+        ],
       },
     ],
     [

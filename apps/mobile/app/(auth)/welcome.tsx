@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { brand, colors, fonts, radius, spacing } from '@/config/brand';
+import { brand, colors, fonts, spacing } from '@/config/brand';
+import LOGO from '../../assets/logo-mark.png';
 import { AppText, BuildStamp, Button, Spacer } from '@/shared/ui';
 
 export default function Welcome() {
@@ -11,9 +12,7 @@ export default function Welcome() {
       <StatusBar style="light" />
 
       <View style={styles.hero}>
-        <View style={styles.crest}>
-          <AppText style={styles.crestLetter}>Y</AppText>
-        </View>
+        <Image source={LOGO} style={styles.crest} resizeMode="contain" />
         <AppText style={styles.logo}>{brand.name}</AppText>
         <View style={styles.rule} />
         <AppText style={styles.tagline}>{brand.tagline}</AppText>
@@ -50,17 +49,7 @@ export default function Welcome() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.ink, padding: spacing.xl },
   hero: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  crest: {
-    width: 84,
-    height: 84,
-    borderRadius: radius.pill,
-    borderWidth: 1,
-    borderColor: colors.primary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: spacing.xl,
-  },
-  crestLetter: { fontFamily: fonts.display, fontSize: 40, lineHeight: 48, color: colors.primary },
+  crest: { width: 110, height: 110, marginBottom: spacing.xl },
   logo: {
     fontFamily: fonts.display,
     fontSize: 46,

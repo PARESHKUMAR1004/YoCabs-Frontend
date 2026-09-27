@@ -59,6 +59,13 @@ export function createNotificationsApi(http: HttpClient) {
       http.request<void>({ method: 'POST', path: `${API}/notifications/${id}/read` }),
     markAllRead: () =>
       http.request<void>({ method: 'POST', path: `${API}/notifications/read-all` }),
+
+    /** Tells the API where to send this user's notifications when the app is closed. */
+    registerDevice: (token: string, platform: string) =>
+      http.request<void>({ method: 'POST', path: `${API}/devices`, body: { token, platform } }),
+    /** Stops notifications going to this phone (on sign-out). */
+    unregisterDevice: (token: string) =>
+      http.request<void>({ method: 'DELETE', path: `${API}/devices`, query: { token } }),
   };
 }
 

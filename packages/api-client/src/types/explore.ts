@@ -29,6 +29,15 @@ export interface ExploreVehicle {
   photos: string[];
 }
 
+/** One cab working around a place, with who runs it: for browsing by the car rather than the partner. */
+export interface ExplorePartnerVehicle {
+  partnerId: Uuid;
+  partnerName: string;
+  partnerRating: number;
+  partnerReviewCount: number;
+  vehicle: ExploreVehicle;
+}
+
 export interface ExplorePartnerDetail {
   partner: ExplorePartner;
   vehicles: ExploreVehicle[];

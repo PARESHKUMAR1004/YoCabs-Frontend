@@ -166,6 +166,33 @@ setting added to a build profile also has to be added with `eas env:set --enviro
 Publishing to `production` is deliberately manual, so a release is a decision:
 `npx eas update --branch production --environment production`.
 
+## Push notifications
+
+Every notification the API creates is also pushed to the person's phone, with a sound that says
+what kind of news it is: bookings, price offers, trips, payments, problems, support, everything
+else (`src/features/notifications/push/channelMap.ts`; the sounds are in `assets/sounds`, made by
+`scripts` in the repo history, and are bundled by the `expo-notifications` plugin). Tapping one
+opens the right screen. Until push works on a build, the app rings the same alerts itself while it
+is open.
+
+Delivery goes API -> Expo push service -> Firebase Cloud Messaging -> phone, so it needs Firebase
+set up once:
+
+1. Create a project at https://console.firebase.google.com and add an **Android app** with package
+   `com.yocabs.app`. Download its `google-services.json`.
+2. Give it to the build. Locally, put it in `apps/mobile/`. On EAS, store it as a file variable:
+   `npx eas env:create --name GOOGLE_SERVICES_JSON --type file --value ./google-services.json --environment preview --visibility sensitive`
+   (repeat for `production`). `app.config.ts` picks it up.
+3. In Firebase: Project settings > Service accounts > **Generate new private key**. Upload that JSON
+   to Expo: expo.dev > the project > Credentials > Android > _FCM V1 service account key_
+   (or `npx eas credentials`).
+4. Build a new APK (`eas build --profile preview --platform android`). Push cannot be added by an
+   over-the-air update, because it needs `google-services.json` inside the app.
+
+The API sends through `https://exp.host/--/api/v2/push/send` and needs no key of its own; set
+`YOCABS_EXPO_ACCESS_TOKEN` only if you turn on Expo's enhanced push security. Devices register at
+`POST /api/v1/devices` and are dropped when Expo reports them gone.
+
 ## Publishing to the Play Store
 
 Already in place: package name `com.yocabs.app`, EAS build profiles (`apps/mobile/eas.json`), HTTPS-only production builds (`APP_ENV=production` turns cleartext off).

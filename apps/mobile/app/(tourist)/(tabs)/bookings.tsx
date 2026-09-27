@@ -7,6 +7,7 @@ import {
   bookingsInGroup,
   type BookingGroup,
 } from '@/shared/utils/bookingGroups';
+import { TouristOffers } from '@/features/negotiation/TouristOffers';
 import { useMyBookings } from '@/features/tourist/hooks';
 import { BookingCard, Button, ChoiceChips, EmptyState, QueryBoundary } from '@/shared/ui';
 
@@ -27,6 +28,7 @@ export default function Bookings() {
       <QueryBoundary query={query}>
         {() => (
           <FlatList
+            ListHeaderComponent={<TouristOffers />}
             data={visible}
             keyExtractor={(booking) => booking.id}
             contentContainerStyle={styles.list}

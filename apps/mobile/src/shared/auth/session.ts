@@ -20,7 +20,23 @@ export async function bootstrapSession(): Promise<void> {
   }
 }
 
+const beforeSignOut = new Set<() => Promise<void>>();
+
+/** Lets a feature do something while the session is still valid, e.g. tell the API to stop sending here. */
+export function onBeforeSignOut(task: () => Promise<void>): () => void {
+  beforeSignOut.add(task);
+  return () => beforeSignOut.delete(task);
+}
+
 export async function signOut(): Promise<void> {
+  for (const task of beforeSignOut) {
+    try {
+      await task();
+    } catch {
+      // Best effort: signing out must never be held up by it.
+    }
+  }
+
   try {
     await api.auth.logout();
   } catch {

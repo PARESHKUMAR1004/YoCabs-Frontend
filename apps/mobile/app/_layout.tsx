@@ -15,6 +15,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { bootstrapSession } from '@/shared/auth/session';
 import { useSessionStore } from '@/shared/auth/session.store';
 import { queryClient } from '@/shared/query/queryClient';
+import { PushBridge } from '@/features/notifications/push/PushBridge';
 import { useAppUpdates } from '@/shared/updates/useAppUpdates';
 import { DialogHost } from '@/shared/ui/DialogHost';
 
@@ -53,6 +54,7 @@ export default function RootLayout() {
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }} />
         <DialogHost />
+        <PushBridge />
       </SafeAreaProvider>
     </QueryClientProvider>
   );

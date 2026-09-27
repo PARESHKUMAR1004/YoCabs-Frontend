@@ -8,6 +8,7 @@ import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { FilterSheet } from '@/features/tourist/FilterSheet';
 import { useTripSearch } from '@/features/tourist/hooks';
 import { OptionCard } from '@/features/tourist/OptionCard';
+import { matchesOnly, onlyHeadline } from '@/features/tourist/onlyChoice';
 import {
   activeFilterCount,
   applyFilters,
@@ -35,11 +36,7 @@ export default function Results() {
   const scoped = useMemo(() => {
     const found = query.data?.options ?? [];
     if (!only) return found;
-    return found.filter((option) =>
-      only.vehicleId
-        ? option.vehicleId === only.vehicleId
-        : option.travelPartnerId === only.partnerId,
-    );
+    return found.filter((option) => matchesOnly(option, only));
   }, [query.data, only]);
 
   const options = useMemo(() => applyFilters(scoped, filters), [scoped, filters]);
@@ -97,12 +94,7 @@ export default function Results() {
                 {only ? (
                   <Row style={styles.only}>
                     <AppText style={styles.flex} numberOfLines={2}>
-                      Showing{' '}
-                      <AppText variant="subheading">
-                        {only.vehicleLabel ? `${only.vehicleLabel} · ` : ''}
-                        {only.partnerName}
-                      </AppText>{' '}
-                      only
+                      Showing <AppText variant="subheading">{onlyHeadline(only)}</AppText> only
                     </AppText>
                     <Button
                       title="Show all"
@@ -142,7 +134,7 @@ export default function Results() {
               only && scoped.length === 0 ? (
                 <EmptyState
                   title="Not available for this trip"
-                  message={`${only.vehicleLabel ?? only.partnerName} cannot take this trip on these dates. You can compare every cab instead.`}
+                  message={`${onlyHeadline(only)} cannot take this trip on these dates. You can compare every cab instead.`}
                   action={<Button title="Show all cabs" onPress={() => setOnly(null)} />}
                 />
               ) : (

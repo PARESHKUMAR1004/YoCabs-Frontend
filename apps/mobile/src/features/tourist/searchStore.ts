@@ -1,17 +1,10 @@
 import { create } from 'zustand';
 import type { TripType, VehicleCategory } from '@yocabs/api-client';
 import type { Place } from '@/shared/places';
+import type { OnlyChoice } from './onlyChoice';
 import { initialDraft, MAX_STOPS, type SearchDraft } from './searchDraft';
 
 export type PlaceField = 'pickup' | 'destination' | 'stop';
-
-/** Set when the tourist picked a particular partner or cab from Explore: results narrow to it. */
-export interface OnlyChoice {
-  partnerId: string;
-  partnerName: string;
-  vehicleId?: string;
-  vehicleLabel?: string;
-}
 
 interface SearchState extends SearchDraft {
   only: OnlyChoice | null;

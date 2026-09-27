@@ -15,6 +15,8 @@ export const keys = {
   explore: {
     partners: (latitude: number, longitude: number) =>
       ['explore', 'partners', latitude, longitude] as const,
+    vehicles: (latitude: number, longitude: number) =>
+      ['explore', 'vehicles', latitude, longitude] as const,
     partner: (id: string, latitude: number, longitude: number) =>
       ['explore', 'partner', id, latitude, longitude] as const,
   },
@@ -23,6 +25,7 @@ export const keys = {
     bookings: () => ['tourist', 'bookings'] as const,
     booking: (id: string) => ['tourist', 'booking', id] as const,
     payments: (bookingId: string) => ['tourist', 'payments', bookingId] as const,
+    negotiations: () => ['tourist', 'negotiations'] as const,
     tripLocation: (bookingId: string) => ['tourist', 'trip-location', bookingId] as const,
     tripRoute: (bookingId: string) => ['tourist', 'trip-route', bookingId] as const,
     negotiation: (id: string) => ['tourist', 'negotiation', id] as const,

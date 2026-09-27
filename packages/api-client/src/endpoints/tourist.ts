@@ -2,8 +2,8 @@ import type { HttpClient } from '../core/http';
 import { newId } from '../core/http';
 import type { Booking, CreateBookingInput, PartnerRating, Payment, Review } from '../types/booking';
 import type { Uuid } from '../types/common';
-import type { ExplorePartner, ExplorePartnerDetail } from '../types/explore';
-import type { Negotiation } from '../types/negotiation';
+import type { ExplorePartner, ExplorePartnerDetail, ExplorePartnerVehicle } from '../types/explore';
+import type { Negotiation, NegotiationStatus } from '../types/negotiation';
 import type { TripLocation, TripRoute } from '../types/tracking';
 import type {
   CreateTripRequestInput,
@@ -44,6 +44,9 @@ export function createTouristApi(http: HttpClient) {
           path: `${API}/trip-requests/${tripRequestId}/negotiations`,
           body: input,
         }),
+      /** The tourist's own offers, newest first. */
+      mine: (status?: NegotiationStatus) =>
+        http.request<Negotiation[]>({ path: `${API}/negotiations`, query: { status } }),
       forTripRequest: (tripRequestId: Uuid) =>
         http.request<Negotiation[]>({ path: `${API}/trip-requests/${tripRequestId}/negotiations` }),
       get: (id: Uuid) => http.request<Negotiation>({ path: `${API}/negotiations/${id}` }),
@@ -117,6 +120,12 @@ export function createTouristApi(http: HttpClient) {
       partners: (latitude: number, longitude: number) =>
         http.request<ExplorePartner[]>({
           path: `${API}/explore/partners`,
+          query: { latitude, longitude },
+          auth: false,
+        }),
+      vehicles: (latitude: number, longitude: number) =>
+        http.request<ExplorePartnerVehicle[]>({
+          path: `${API}/explore/vehicles`,
           query: { latitude, longitude },
           auth: false,
         }),

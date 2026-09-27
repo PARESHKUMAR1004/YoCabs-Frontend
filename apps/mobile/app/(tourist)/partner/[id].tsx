@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image, StyleSheet, View } from 'react-native';
 import { colors, radius, spacing } from '@/config/brand';
 import { useExplorePartner } from '@/features/explore/hooks';
+import { useBookFromExplore } from '@/features/explore/useBookFromExplore';
 import { useSearchStore } from '@/features/tourist/searchStore';
 import { api } from '@/shared/api/client';
 import {
@@ -55,8 +56,7 @@ function VehicleCard({ vehicle, onBook }: { vehicle: ExploreVehicle; onBook: () 
 export default function PartnerPage() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const pickup = useSearchStore((state) => state.pickup);
-  const destination = useSearchStore((state) => state.destination);
-  const setOnly = useSearchStore((state) => state.setOnly);
+  const book = useBookFromExplore();
   const query = useExplorePartner(id, pickup);
 
   if (!pickup) {
@@ -89,28 +89,21 @@ export default function PartnerPage() {
             <VehicleCard
               key={vehicle.id}
               vehicle={vehicle}
-              onBook={() => {
-                setOnly({
+              onBook={() =>
+                book({
                   partnerId: partner.id,
                   partnerName: partner.name,
                   vehicleId: vehicle.id,
                   vehicleLabel: `${vehicle.make} ${vehicle.model}`,
-                });
-                // With a destination already chosen, go straight to the price; otherwise ask for it.
-                if (destination) router.push('/(tourist)/results');
-                else router.navigate('/(tourist)/(tabs)');
-              }}
+                })
+              }
             />
           ))}
 
           <Button
             title={`See all of ${partner.name}'s prices for a trip`}
             variant="ghost"
-            onPress={() => {
-              setOnly({ partnerId: partner.id, partnerName: partner.name });
-              if (destination) router.push('/(tourist)/results');
-              else router.navigate('/(tourist)/(tabs)');
-            }}
+            onPress={() => book({ partnerId: partner.id, partnerName: partner.name })}
           />
         </Screen>
       )}

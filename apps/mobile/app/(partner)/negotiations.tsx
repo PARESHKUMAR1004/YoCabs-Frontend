@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { FlatList, StyleSheet } from 'react-native';
 import { spacing } from '@/config/brand';
+import { sortForAttention } from '@/features/negotiation/negotiationProgress';
 import { usePartnerNegotiations } from '@/features/partner/hooks';
 import { AppText, Badge, Card, EmptyState, QueryBoundary, Row } from '@/shared/ui';
 import { formatDate, formatMoney } from '@/shared/utils/format';
@@ -22,7 +23,7 @@ export default function Negotiations() {
     >
       {(items) => (
         <FlatList
-          data={items}
+          data={sortForAttention(items, 'partner')}
           keyExtractor={(item) => item.id}
           contentContainerStyle={styles.list}
           refreshing={query.isRefetching}

@@ -8,10 +8,12 @@ import { PlaceSuggestionRow } from '@/features/tourist/PlaceSuggestionRow';
 import { selectDraft, useSearchStore, type PlaceField } from '@/features/tourist/searchStore';
 import { validateDraft } from '@/features/tourist/searchDraft';
 import { ExploreSection } from '@/features/explore/ExploreSection';
+import { TouristOffers } from '@/features/negotiation/TouristOffers';
+import { onlyHeadline } from '@/features/tourist/onlyChoice';
 import { useCurrentPickup } from '@/features/tourist/useCurrentPickup';
 import { MapCanvas, tripMarkers } from '@/shared/maps';
 import { placeProvider, type Place } from '@/shared/places';
-import { AppText, Button, ChoiceChips, DateField, Screen, Spacer } from '@/shared/ui';
+import { AppText, Button, ChoiceChips, DateField, Logo, Screen, Spacer } from '@/shared/ui';
 import { showInfo } from '@/shared/utils/feedback';
 import { toIsoDate } from '@/shared/utils/format';
 import { TRIP_TYPE_OPTIONS, VEHICLE_CATEGORY_OPTIONS } from '@/shared/utils/labels';
@@ -81,6 +83,9 @@ export default function Home() {
       }
     >
       <View style={styles.hero}>
+        <View style={styles.brand}>
+          <Logo />
+        </View>
         <AppText variant="caption" color="primary" style={styles.greeting}>
           {greeting(new Date())}
         </AppText>
@@ -133,6 +138,8 @@ export default function Home() {
         </AppText>
       ) : null}
 
+      <TouristOffers />
+
       {store.only ? (
         <View style={styles.only}>
           <View style={styles.flex}>
@@ -140,8 +147,7 @@ export default function Home() {
               Booking with
             </AppText>
             <AppText variant="subheading" color="textOnPrimary" numberOfLines={1}>
-              {store.only.vehicleLabel ? `${store.only.vehicleLabel} · ` : ''}
-              {store.only.partnerName}
+              {onlyHeadline(store.only)}
             </AppText>
           </View>
           <Pressable
@@ -236,6 +242,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     ...shadow.raised,
   },
+  brand: { marginBottom: spacing.lg },
   greeting: { letterSpacing: 1.5, textTransform: 'uppercase' },
   heroTitle: { marginTop: spacing.xs, marginBottom: spacing.lg },
   location: {
