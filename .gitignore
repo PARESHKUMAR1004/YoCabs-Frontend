@@ -30,3 +30,6 @@ npm-debug.log*
 Thumbs.db
 .idea/
 *.swp
+
+# Firebase config: stored as an EAS file variable, not in git
+google-services.json
