@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useDriverTrip, useTripAction } from '@/features/driver/hooks';
-import { useTripSharing } from '@/features/driver/useTripSharing';
+import { DutyBanner } from '@/features/driver/DutyBanner';
+import { useDutyStatus } from '@/features/driver/dutyStatus';
 import { TripCodeEntry } from '@/features/trip/TripCodeEntry';
 import {
   AppText,
@@ -14,7 +15,7 @@ import {
   SectionHeader,
   Spacer,
 } from '@/shared/ui';
-import { confirmAction, showError } from '@/shared/utils/feedback';
+import { confirmAction, showError, showInfo } from '@/shared/utils/feedback';
 import { formatDateRange } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
@@ -22,21 +23,21 @@ export default function DriverTrip() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const query = useDriverTrip(id);
   const action = useTripAction(id);
-  const sharing = useTripSharing(id);
+  const dutyState = useDutyStatus((state) => state.state);
 
-  const start = async (code: string) => {
-    // Location sharing lasts exactly as long as the trip: it starts here and stops on completion.
-    if (!(await sharing.begin())) return;
+  const start = (code: string) => {
+    // A trip cannot start with location off: the traveller follows the driver from here.
+    if (dutyState !== 'on') {
+      showInfo(
+        'Turn on your location first',
+        'Location has to be on before the trip can start. Allow it above, then try again.',
+      );
+      return;
+    }
 
     action.mutate(
       { action: 'start', code },
-      {
-        onError: (error) => {
-          // A wrong code means the trip did not start, so stop tracking the driver again.
-          void sharing.end();
-          showError(error, 'That did not work');
-        },
-      },
+      { onError: (error) => showError(error, 'That did not work') },
     );
   };
 
@@ -50,10 +51,7 @@ export default function DriverTrip() {
 
     action.mutate(
       { action: 'complete' },
-      {
-        onSuccess: () => void sharing.end(),
-        onError: (error) => showError(error, 'That did not work'),
-      },
+      { onError: (error) => showError(error, 'That did not work') },
     );
   };
 
@@ -68,18 +66,10 @@ export default function DriverTrip() {
           <Spacer size="sm" />
           <Badge label={bookingStatusLabel(trip.status)} tone={bookingStatusTone(trip.status)} />
 
-          {sharing.sharing ? (
+          {trip.status === 'CONFIRMED' || trip.status === 'IN_PROGRESS' ? (
             <>
               <Spacer size="sm" />
-              <Card>
-                <AppText variant="subheading" color="success">
-                  Sharing your location
-                </AppText>
-                <AppText variant="small" color="textMuted">
-                  Your travel partner and the traveller can see where you are. This stops when you
-                  complete the trip.
-                </AppText>
-              </Card>
+              <DutyBanner />
             </>
           ) : null}
 
@@ -110,7 +100,7 @@ export default function DriverTrip() {
               hint="Ask the traveller for the start code shown in their YoCabs app."
               buttonTitle="Start trip"
               loading={action.isPending}
-              onSubmit={(code) => void start(code)}
+              onSubmit={(code) => start(code)}
             />
           ) : null}
           {trip.status === 'IN_PROGRESS' ? (

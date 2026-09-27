@@ -3,7 +3,7 @@ import { router } from 'expo-router';
 import { AppState, Modal, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { colors, radius, spacing } from '@/config/brand';
-import { AppText, Button, CallButton, Card } from '@/shared/ui';
+import { AppText, Button } from '@/shared/ui';
 import { toIsoDate } from '@/shared/utils/format';
 import { useMyBookings } from './hooks';
 import { findOngoingTrip } from './ongoingTrip';
@@ -57,23 +57,7 @@ export function ActiveTripPrompt() {
               {ongoing.pickup} → {ongoing.destination}
             </AppText>
 
-            {ongoing.driver && !started ? (
-              <Card>
-                <AppText variant="small" color="textMuted">
-                  Your driver
-                </AppText>
-                <AppText variant="subheading">{ongoing.driver.name ?? 'Driver'}</AppText>
-                {ongoing.vehicle ? (
-                  <AppText color="textMuted">
-                    {ongoing.vehicle.make} {ongoing.vehicle.model} ·{' '}
-                    {ongoing.vehicle.registrationNumber}
-                  </AppText>
-                ) : null}
-                <CallButton title="Call driver" mobile={ongoing.driver.mobile} />
-              </Card>
-            ) : null}
-
-            {started ? <LiveTripMap bookingId={ongoing.id} booking={ongoing} height={220} /> : null}
+            <LiveTripMap bookingId={ongoing.id} booking={ongoing} height={220} />
 
             {ongoing.tripCode ? <TripCodeCard code={ongoing.tripCode} /> : null}
 

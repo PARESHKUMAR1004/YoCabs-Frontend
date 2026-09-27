@@ -24,10 +24,13 @@ function routeMarker(id: string, kind: MapMarker['kind'], place: RoutePlace): Ma
 /** The Uber-style panel under the map: time left, distance left, progress and the driver. */
 function TripStatus({
   location,
+  toPickup,
   destination,
   booking,
 }: {
   location: TripLocation | null | undefined;
+  /** The driver is coming to the pickup, rather than taking the traveller to the destination. */
+  toPickup: boolean;
   destination: string | undefined;
   booking?: Booking;
 }) {
@@ -42,15 +45,19 @@ function TripStatus({
         <View style={styles.flex}>
           {location === null || location === undefined ? (
             <>
-              <AppText variant="heading">Getting your trip going</AppText>
+              <AppText variant="heading">
+                {toPickup ? 'Your driver is getting ready' : 'Getting your trip going'}
+              </AppText>
               <AppText variant="small" color="textMuted">
-                Your driver&apos;s live location appears here as soon as they share it.
+                Their live location appears here in a moment. It is shared automatically.
               </AppText>
             </>
           ) : minutes === null || km === null ? (
             <>
-              <AppText variant="heading">On the way</AppText>
-              {destination ? (
+              <AppText variant="heading">
+                {toPickup ? 'Your driver is on the way' : 'On the way'}
+              </AppText>
+              {destination && !toPickup ? (
                 <AppText variant="small" color="textMuted">
                   Heading to {destination}
                 </AppText>
@@ -59,11 +66,20 @@ function TripStatus({
           ) : (
             <>
               <AppText variant="title" style={styles.figure}>
-                {arriving ? 'Arriving now' : formatDuration(minutes)}
+                {arriving
+                  ? toPickup
+                    ? 'Your driver is here'
+                    : 'Arriving now'
+                  : toPickup
+                    ? `${formatDuration(minutes)} away`
+                    : formatDuration(minutes)}
               </AppText>
               <AppText variant="small" color="textMuted">
-                {formatRemaining(km)} to {destination ?? 'your destination'}
-                {arriving ? '' : ` · arrive by ${formatArrival(new Date(), minutes)}`}
+                {formatRemaining(km)} to{' '}
+                {toPickup ? 'your pickup' : (destination ?? 'your destination')}
+                {arriving
+                  ? ''
+                  : ` · ${toPickup ? 'arrives' : 'arrive by'} ${formatArrival(new Date(), minutes)}`}
               </AppText>
             </>
           )}
@@ -120,17 +136,24 @@ export function LiveTripMap({
   const route = useTripRoute(bookingId, true);
   const car = useTripLocation(bookingId, true);
 
+  // Until the trip starts the car is coming to the pickup, so that is all the map needs to show.
+  const toPickup = car.data?.phase
+    ? car.data.phase === 'TO_PICKUP'
+    : booking?.status === 'CONFIRMED';
+
   const markers: MapMarker[] = [];
   if (route.data) {
     const { pickup, stops, destination } = route.data;
-    const ends = [
-      routeMarker('pickup', 'pickup', pickup),
-      ...stops.map((stop, index) => routeMarker(`stop-${index}`, 'stop', stop)),
-      routeMarker('destination', 'destination', destination),
-    ];
+    const ends = toPickup
+      ? [routeMarker('pickup', 'pickup', pickup)]
+      : [
+          routeMarker('pickup', 'pickup', pickup),
+          ...stops.map((stop, index) => routeMarker(`stop-${index}`, 'stop', stop)),
+          routeMarker('destination', 'destination', destination),
+        ];
     markers.push(...ends.filter((marker): marker is MapMarker => marker !== null));
   }
-  const drawable = route.data ? hasCoordinates(route.data.pickup) : false;
+  const drawable = !toPickup && route.data ? hasCoordinates(route.data.pickup) : false;
 
   if (car.data) {
     markers.push({
@@ -149,6 +172,7 @@ export function LiveTripMap({
       ) : null}
       <TripStatus
         location={car.data}
+        toPickup={toPickup}
         destination={route.data?.destination.description}
         booking={booking}
       />

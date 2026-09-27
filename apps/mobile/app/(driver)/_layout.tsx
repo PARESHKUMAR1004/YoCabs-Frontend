@@ -1,4 +1,5 @@
 import { Stack } from 'expo-router';
+import { DutyTracker } from '@/features/driver/DutyTracker';
 import { RoleGuard } from '@/shared/auth/RoleGuard';
 import { stackScreenOptions } from '@/shared/ui/navigation';
 
@@ -13,6 +14,7 @@ export default function DriverLayout() {
         <Stack.Screen name="support/new" options={{ title: 'New request' }} />
         <Stack.Screen name="support/[id]" options={{ title: 'Support request' }} />
       </Stack>
+      <DutyTracker />
     </RoleGuard>
   );
 }

@@ -2,6 +2,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useBooking, useBookingPayments, useCancelBooking } from '@/features/tourist/hooks';
 import { BalanceCard } from '@/features/tourist/BalanceCard';
 import { FareTotal } from '@/features/tourist/FareTotal';
+import { isFollowable } from '@/features/tourist/followable';
 import { LiveTripMap } from '@/features/tourist/LiveTripMap';
 import { TripCodeCard } from '@/features/tourist/TripCodeCard';
 import {
@@ -18,7 +19,13 @@ import {
   Spacer,
 } from '@/shared/ui';
 import { confirmAction, showError } from '@/shared/utils/feedback';
-import { formatDateRange, formatDateTime, formatMoney, humanize } from '@/shared/utils/format';
+import {
+  formatDateRange,
+  formatDateTime,
+  formatMoney,
+  humanize,
+  toIsoDate,
+} from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
 export default function BookingDetail() {
@@ -63,9 +70,13 @@ export default function BookingDetail() {
             />
           ) : null}
 
-          {booking.status === 'IN_PROGRESS' ? (
+          {isFollowable(booking, toIsoDate(new Date())) ? (
             <>
-              <SectionHeader title="Your trip, live" />
+              <SectionHeader
+                title={
+                  booking.status === 'IN_PROGRESS' ? 'Your trip, live' : 'Your driver is on the way'
+                }
+              />
               <LiveTripMap bookingId={booking.id} booking={booking} />
             </>
           ) : null}

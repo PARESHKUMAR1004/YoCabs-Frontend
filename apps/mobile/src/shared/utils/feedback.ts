@@ -24,6 +24,15 @@ export function showError(error: unknown, title = 'Something went wrong'): void 
   void ask({ tone: 'error', title, message: userMessage(error), confirmLabel: 'OK' });
 }
 
+/** A notice the person must dismiss before things go on; resolves once they have. */
+export async function acknowledge(
+  title: string,
+  message: string,
+  label = 'I understand',
+): Promise<void> {
+  await ask({ tone: 'info', title, message, confirmLabel: label });
+}
+
 export function showInfo(title: string, message?: string): void {
   void ask({ tone: 'info', title, message, confirmLabel: 'OK' });
 }

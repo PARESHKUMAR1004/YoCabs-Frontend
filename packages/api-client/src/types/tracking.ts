@@ -13,6 +13,8 @@ export interface TripLocation {
   remainingMinutes?: number | null;
   /** The whole journey's length, so an app can show progress. */
   tripDistanceKm?: number | null;
+  /** TO_PICKUP while the driver is coming to the pickup, TO_DESTINATION once the trip has started. */
+  phase?: 'TO_PICKUP' | 'TO_DESTINATION' | null;
 }
 
 export interface ReportLocationInput {

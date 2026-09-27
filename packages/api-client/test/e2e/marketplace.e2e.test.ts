@@ -210,6 +210,11 @@ describe.skipIf(!BASE_URL)('marketplace end to end', () => {
 
     const trips = await driver.driver.trips();
     expect(trips.map((t: Booking) => t.id)).toContain(booking.id);
+    // The driver's phone shares its location from the day of the trip; a trip cannot start without it.
+    await driver.driver.reportLocation(booking.id, { latitude: 20.3, longitude: 85.83 });
+    const approaching = await tourist.tourist.tripLocation(booking.id);
+    expect(approaching?.phase).toBe('TO_PICKUP');
+
     // The tourist reads the start code out; the driver types it in.
     const startCode = (await tourist.tourist.bookings.get(booking.id)).tripCode;
     expect(startCode).toMatch(/^\d{6}$/);

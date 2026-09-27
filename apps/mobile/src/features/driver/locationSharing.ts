@@ -60,7 +60,7 @@ export async function requestTrackingPermission(): Promise<void> {
 
   if (foreground.status !== 'granted') {
     throw new LocationPermissionError(
-      'YoCabs needs location access to share your position with your travel partner during a trip.',
+      'YoCabs needs location access to share your position with the traveller and your travel partner during a trip.',
     );
   }
 
@@ -73,11 +73,20 @@ export async function requestTrackingPermission(): Promise<void> {
   }
 }
 
+/** Has the driver already allowed location, background included? Nothing is asked here. */
+export async function hasTrackingPermission(): Promise<boolean> {
+  const [foreground, background] = await Promise.all([
+    Location.getForegroundPermissionsAsync(),
+    Location.getBackgroundPermissionsAsync(),
+  ]);
+  return foreground.status === 'granted' && background.status === 'granted';
+}
+
 export async function isSharing(): Promise<boolean> {
   return Location.hasStartedLocationUpdatesAsync(TASK_NAME);
 }
 
-/** Begins sharing for one trip. Safe to call again; it simply re-points at the same booking. */
+/** Begins sharing for one trip. Safe to call again; it simply re-points at the booking. */
 export async function startSharing(bookingId: string): Promise<void> {
   await requestTrackingPermission();
   await SecureStore.setItemAsync(TRACKED_BOOKING_KEY, bookingId);
@@ -87,13 +96,15 @@ export async function startSharing(bookingId: string): Promise<void> {
   await Location.startLocationUpdatesAsync(TASK_NAME, {
     accuracy: Location.Accuracy.Balanced,
     timeInterval: 20_000,
-    distanceInterval: 50,
+    // No distance filter: a driver waiting at the pickup must keep reporting, or the trip could not start.
+    distanceInterval: 0,
     pausesUpdatesAutomatically: false,
     // Android shows this while tracking runs, so the driver always knows it is on.
     foregroundService: {
-      notificationTitle: 'YoCabs trip in progress',
-      notificationBody: 'Sharing your location with your travel partner until the trip ends.',
-      notificationColor: '#F97316',
+      notificationTitle: 'YoCabs is sharing your location',
+      notificationBody:
+        'The traveller and your travel partner can see where you are until the trip ends.',
+      notificationColor: '#B08D57',
     },
   });
 }
@@ -105,9 +116,4 @@ export async function stopSharing(): Promise<void> {
   if (await isSharing()) {
     await Location.stopLocationUpdatesAsync(TASK_NAME);
   }
-}
-
-/** The trip currently being shared, if any. Lets a restarted app show the right state. */
-export async function sharedBookingId(): Promise<string | null> {
-  return readTrackedBooking();
 }

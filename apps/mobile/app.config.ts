@@ -84,7 +84,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       'ACCESS_FINE_LOCATION',
       // Drivers share their position while a trip runs, with the screen off. Google reviews this
       // permission: the Play Console declaration and the in-app disclosure both have to match
-      // what useTripSharing shows before the prompt.
+      // what DutyTracker shows before the prompt.
       'ACCESS_BACKGROUND_LOCATION',
       'FOREGROUND_SERVICE',
       'FOREGROUND_SERVICE_LOCATION',

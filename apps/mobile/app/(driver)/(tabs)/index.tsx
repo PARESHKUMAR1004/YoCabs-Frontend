@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { router } from 'expo-router';
 import { FlatList, StyleSheet, View } from 'react-native';
 import { spacing } from '@/config/brand';
+import { DutyBanner } from '@/features/driver/DutyBanner';
 import { useDriverTrips } from '@/features/driver/hooks';
 import { BookingCard, ChoiceChips, EmptyState, QueryBoundary } from '@/shared/ui';
 import {
@@ -27,6 +28,7 @@ export default function DriverTrips() {
       <QueryBoundary query={query}>
         {() => (
           <FlatList
+            ListHeaderComponent={<DutyBanner />}
             data={visible}
             keyExtractor={(trip) => trip.id}
             contentContainerStyle={styles.list}

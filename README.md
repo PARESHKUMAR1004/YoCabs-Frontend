@@ -120,16 +120,19 @@ ground with different cars. A vehicle with no area never appears in a traveller'
 partner's **Fleet map** draws every vehicle's area as a circle and puts a pin on any car currently
 on a trip.
 
-While a trip runs, the driver's app shares its position in the background, and the traveller on that
-trip, the partner and YoCabs admins can see it. This needs care at release time:
+From the day of a trip, once a travel partner has assigned a driver, the driver's app shares its
+position in the background until the trip is completed, and the traveller on that trip, the partner
+and YoCabs admins can see it: the traveller watches the driver come to the pickup, then the trip.
+Sharing is automatic and cannot be switched off (`DutyTracker`); a trip cannot start without it.
+Trips days away are not tracked. This needs care at release time:
 
 - The app asks for `ACCESS_BACKGROUND_LOCATION` and runs a foreground service with a visible
   notification. Before the system prompt, the driver sees a plain-language disclosure
-  (`useTripSharing`) that must stay word-for-word consistent with the Play Console declaration.
+  (`DutyTracker`) that must stay word-for-word consistent with the Play Console declaration.
 - Play Console requires a **background location declaration** with a video showing the in-app
   disclosure and the feature in use. Expect review to take longer because of it.
 - Only the **latest** position is stored, one row per trip, overwritten as it moves. The API
-  accepts and serves it only while the trip is `IN_PROGRESS`, only the traveller on the trip, the
+  accepts and serves it only while the trip is `IN_PROGRESS` or is `CONFIRMED` with a driver assigned on or after its travel date, only the traveller on the trip, the
   owning partner and admins may read it, and a scheduled sweep clears anything a finished trip left behind. Say exactly this
   in the privacy policy and the Data safety form.
 

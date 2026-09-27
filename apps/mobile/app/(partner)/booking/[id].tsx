@@ -20,9 +20,10 @@ import {
   SectionHeader,
   Spacer,
 } from '@/shared/ui';
+import { isFollowable } from '@/features/tourist/followable';
 import { TripCodeEntry } from '@/features/trip/TripCodeEntry';
 import { confirmAction, showError } from '@/shared/utils/feedback';
-import { formatDateRange, formatDateTime, formatMoney } from '@/shared/utils/format';
+import { formatDateRange, formatDateTime, formatMoney, toIsoDate } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
 export default function PartnerBookingDetail() {
@@ -31,7 +32,8 @@ export default function PartnerBookingDetail() {
   const drivers = useDrivers();
   const action = useBookingAction(id);
   const [driverId, setDriverId] = useState<string>();
-  const live = useTripLocation(id, query.data?.status === 'IN_PROGRESS');
+  const following = query.data ? isFollowable(query.data, toIsoDate(new Date())) : false;
+  const live = useTripLocation(id, following);
 
   const run = (name: 'assignDriver' | 'start' | 'complete' | 'cancel', value?: string) =>
     action.mutate(
@@ -97,7 +99,7 @@ export default function PartnerBookingDetail() {
               />
             </Card>
 
-            {booking.status === 'IN_PROGRESS' ? (
+            {isFollowable(booking, toIsoDate(new Date())) ? (
               <>
                 <SectionHeader title="Where the car is" />
                 {live.data ? (
