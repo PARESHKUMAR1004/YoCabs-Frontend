@@ -9,8 +9,9 @@ export const brand = {
 } as const;
 
 /**
- * Midnight and champagne: a deep ink for weight, warm ivory for the ground, and a restrained gold
- * accent. Screens name a role (`primary`, `surface`), never a hex value.
+ * Midnight, champagne gold and warm sand: a deep ink for weight, a restrained gold accent, and a
+ * sand-toned ground instead of plain white, so the app never reads as a stock light theme. Screens
+ * name a role (`primary`, `surface`), never a hex value.
  */
 export const colors = {
   ink: '#0B1220',
@@ -21,10 +22,13 @@ export const colors = {
   text: '#0B1220',
   textMuted: '#6B6559',
   textOnPrimary: '#FFFFFF',
-  background: '#FBFAF7',
+  /** The page itself: a warm sand, not white. */
+  background: '#F3EAD9',
+  /** Elevated content (cards, sheets): crisp white, so it lifts off the sand ground. */
   card: '#FFFFFF',
-  surface: '#F4F1EA',
-  border: '#E7E1D3',
+  /** Recessed content on the sand ground (placeholders, map frames, neutral badges). */
+  surface: '#EADFC5',
+  border: '#E1D3B4',
   success: '#2E7D5B',
   successSoft: '#E1F2E9',
   danger: '#B3423A',
