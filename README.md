@@ -170,8 +170,7 @@ Publishing to `production` is deliberately manual, so a release is a decision:
 
 Every notification the API creates is also pushed to the person's phone, with a sound that says
 what kind of news it is: bookings, price offers, trips, payments, problems, support, everything
-else (`src/features/notifications/push/channelMap.ts`; the sounds are in `assets/sounds`, made by
-`scripts` in the repo history, and are bundled by the `expo-notifications` plugin). Tapping one
+else (`src/features/notifications/push/channelMap.ts`; the sounds are in `assets/sounds`, made by `apps/mobile/scripts/generate-assets.py`, and are bundled by the `expo-notifications` plugin). Tapping one
 opens the right screen. Until push works on a build, the app rings the same alerts itself while it
 is open.
 
