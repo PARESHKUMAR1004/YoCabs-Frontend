@@ -6,10 +6,12 @@ import { api } from '@/shared/api/client';
 import { AppText, Badge, Card, RatingBadge, Row } from '@/shared/ui';
 import { formatMoney } from '@/shared/utils/format';
 import { categoryLabel, tripTypeLabel } from '@/shared/utils/labels';
+import { compareToStandard } from './standardRateCompare';
 
 /** One comparable result: the car first, then who runs it and what it costs. */
 export function OptionCard({ option, onPress }: { option: SearchOption; onPress: () => void }) {
   const photo = option.photos[0];
+  const comparison = compareToStandard(option.price.totalAmount, option.standardAmount);
 
   return (
     <Card onPress={onPress}>
@@ -54,6 +56,12 @@ export function OptionCard({ option, onPress }: { option: SearchOption; onPress:
           </AppText>
         </View>
       </Row>
+
+      {comparison ? (
+        <View style={styles.comparison}>
+          <Badge label={comparison.label} tone={comparison.tone} />
+        </View>
+      ) : null}
     </Card>
   );
 }
@@ -74,4 +82,5 @@ const styles = StyleSheet.create({
   facilities: { flex: 1, flexWrap: 'wrap', gap: spacing.xs },
   price: { alignItems: 'flex-end' },
   amount: { fontSize: 24, lineHeight: 30 },
+  comparison: { marginTop: spacing.sm, alignItems: 'flex-start' },
 });

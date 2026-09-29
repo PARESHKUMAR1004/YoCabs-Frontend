@@ -50,6 +50,8 @@ export interface Booking {
    * is assigned, null from the moment the trip begins.
    */
   tripCode: string | null;
+  /** Tourist only: whether this completed trip has already been rated once. */
+  reviewed: boolean;
 }
 
 export interface CreateBookingInput {

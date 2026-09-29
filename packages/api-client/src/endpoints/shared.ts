@@ -1,9 +1,21 @@
 import type { HttpClient } from '../core/http';
 import type { Uuid } from '../types/common';
-import type { DocumentOwnerType, DocumentRecord, UploadDocumentInput } from '../types/fleet';
+import type {
+  DocumentOwnerType,
+  DocumentRecord,
+  StandardRate,
+  UploadDocumentInput,
+} from '../types/fleet';
 import type { AppNotification, OpenTicketInput, Ticket, TicketSummary } from '../types/operations';
 
 const API = '/api/v1';
+
+/** The admin-defined benchmark fares: public, so the app can show them before anyone signs in. */
+export function createStandardRatesApi(http: HttpClient) {
+  return {
+    list: () => http.request<StandardRate[]>({ path: '/api/v1/standard-rates', auth: false }),
+  };
+}
 
 export function createDocumentsApi(http: HttpClient) {
   return {

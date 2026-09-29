@@ -2,7 +2,12 @@ import { HttpClient, type HttpConfig } from './core/http';
 import { createAdminApi } from './endpoints/admin';
 import { createAuthApi } from './endpoints/auth';
 import { createDriverApi, createPartnerApi } from './endpoints/partner';
-import { createDocumentsApi, createNotificationsApi, createSupportApi } from './endpoints/shared';
+import {
+  createDocumentsApi,
+  createNotificationsApi,
+  createStandardRatesApi,
+  createSupportApi,
+} from './endpoints/shared';
 import { createTouristApi } from './endpoints/tourist';
 
 /** One object per app: `const api = createYoCabsClient({...})`, then `api.tourist.search(...)`. */
@@ -16,6 +21,7 @@ export function createYoCabsClient(config: HttpConfig) {
     driver: createDriverApi(http),
     admin: createAdminApi(http),
     documents: createDocumentsApi(http),
+    standardRates: createStandardRatesApi(http),
     notifications: createNotificationsApi(http),
     support: createSupportApi(http),
     /** Turns a relative asset path from the API (vehicle photos) into a full URL. */

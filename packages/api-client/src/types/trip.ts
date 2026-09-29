@@ -50,6 +50,8 @@ export interface SearchOption {
   photos: string[];
   tripType: TripType;
   price: PriceCalculation;
+  /** What YoCabs considers typical for this vehicle type over this trip; null with no admin rate set. */
+  standardAmount: number | null;
 }
 
 export interface TripSearchResponse {

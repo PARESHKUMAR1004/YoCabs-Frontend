@@ -3,6 +3,13 @@ import type { FacilityRef } from './trip';
 
 export type PartnerStatus = 'PENDING_APPROVAL' | 'ACTIVE' | 'SUSPENDED' | 'INACTIVE';
 
+/** The reference per-km fare YoCabs quotes for one vehicle type, set by an admin. */
+export interface StandardRate {
+  category: VehicleCategory;
+  perKmRate: number;
+  updatedAt: IsoInstant;
+}
+
 /** The ground one vehicle covers. Areas belong to the vehicle, not the partner. */
 export interface ServiceArea {
   id: Uuid;

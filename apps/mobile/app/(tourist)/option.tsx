@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { spacing } from '@/config/brand';
 import { useBookingFlow } from '@/features/tourist/bookingFlow';
 import { FareTotal } from '@/features/tourist/FareTotal';
+import { compareToStandard } from '@/features/tourist/standardRateCompare';
 import { PhotoGallery } from '@/features/vehicles/PhotoGallery';
 import {
   AppText,
@@ -32,6 +33,8 @@ export default function OptionDetails() {
       />
     );
   }
+
+  const comparison = compareToStandard(option.price.totalAmount, option.standardAmount);
 
   return (
     <Screen
@@ -90,6 +93,7 @@ export default function OptionDetails() {
       ) : null}
 
       <FareTotal total={option.price.totalAmount} currency={option.price.currency} />
+      {comparison ? <Badge label={comparison.label} tone={comparison.tone} /> : null}
       <AppText variant="small" color="textMuted">
         You pay only a small token now to confirm. You will not be charged until you confirm the
         booking.

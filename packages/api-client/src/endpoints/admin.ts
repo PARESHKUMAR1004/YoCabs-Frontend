@@ -10,7 +10,7 @@ import type {
   PaymentsView,
   RefundsView,
 } from '../types/admin';
-import type { DocumentRecord, Facility, PartnerStatus } from '../types/fleet';
+import type { DocumentRecord, Facility, PartnerStatus, StandardRate } from '../types/fleet';
 import type { Payout, TicketSummary, TicketStatus } from '../types/operations';
 import type { LiveTrip } from '../types/tracking';
 
@@ -154,6 +154,16 @@ export function createAdminApi(http: HttpClient) {
         http.request<Facility>({
           method: 'POST',
           path: `${ADMIN}/facilities/${code}/${active ? 'activate' : 'deactivate'}`,
+        }),
+    },
+
+    standardRates: {
+      /** The benchmark fare per kilometre for one vehicle type; replaces any rate already set for it. */
+      set: (category: string, perKmRate: number) =>
+        http.request<StandardRate>({
+          method: 'PUT',
+          path: `${ADMIN}/standard-rates/${category}`,
+          body: { perKmRate },
         }),
     },
 

@@ -13,6 +13,7 @@ const LINKS = [
   { to: '/payouts', label: 'Payouts' },
   { to: '/support', label: 'Support' },
   { to: '/facilities', label: 'Facilities' },
+  { to: '/standard-rates', label: 'Standard rates' },
   { to: '/audit', label: 'Audit log' },
 ];
 

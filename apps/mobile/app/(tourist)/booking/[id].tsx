@@ -104,7 +104,7 @@ export default function BookingDetail() {
             ) : null}
           </Card>
 
-          {booking.driver ? (
+          {booking.driver && (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') ? (
             <>
               <SectionHeader title="Your driver" />
               <Card>
@@ -155,13 +155,17 @@ export default function BookingDetail() {
           ) : null}
 
           <Spacer />
-          {booking.status === 'COMPLETED' ? (
+          {booking.status === 'COMPLETED' && !booking.reviewed ? (
             <Button
               title="Rate this trip"
               onPress={() =>
                 router.push({ pathname: '/(tourist)/review/[id]', params: { id: booking.id } })
               }
             />
+          ) : booking.status === 'COMPLETED' && booking.reviewed ? (
+            <AppText color="textMuted" align="center">
+              Thanks, you already rated this trip.
+            </AppText>
           ) : null}
           {booking.status === 'CONFIRMED' || booking.status === 'PENDING_PAYMENT' ? (
             <Button

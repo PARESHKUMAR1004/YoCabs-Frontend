@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 import { useUnreadCount } from '@/features/notifications/hooks';
+import { Logo } from '@/shared/ui';
 import { tabScreenOptions } from '@/shared/ui/navigation';
 
 export default function TouristTabs() {
@@ -11,7 +12,8 @@ export default function TouristTabs() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Book a ride',
+          // The brand mark sits in the header; "Book a ride" moved down into the hero.
+          headerTitle: () => <Logo size={30} onDark={false} />,
           tabBarLabel: 'Home',
           tabBarIcon: ({ color, size, focused }) => (
             <Ionicons name={focused ? 'compass' : 'compass-outline'} color={color} size={size} />

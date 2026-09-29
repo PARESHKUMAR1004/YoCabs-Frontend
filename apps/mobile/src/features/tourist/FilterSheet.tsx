@@ -171,6 +171,12 @@ export function FilterSheet({
               ) : null}
             </ScrollView>
 
+            <AppText variant="small" color="textMuted" align="center" style={styles.matchCount}>
+              {remaining === 0
+                ? 'No cabs match these filters'
+                : `${remaining} ${remaining === 1 ? 'cab matches' : 'cabs match'}`}
+            </AppText>
+
             <View style={styles.footer}>
               <Button
                 title="Reset"
@@ -179,11 +185,7 @@ export function FilterSheet({
                 style={styles.reset}
               />
               <Button
-                title={
-                  remaining === 0
-                    ? 'No cabs match'
-                    : `Show ${remaining} ${remaining === 1 ? 'cab' : 'cabs'}`
-                }
+                title="Apply filters"
                 disabled={remaining === 0}
                 onPress={() => onApply(draft)}
                 style={styles.apply}
@@ -221,6 +223,7 @@ const styles = StyleSheet.create({
   group: { marginBottom: spacing.lg },
   groupTitle: { textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: spacing.sm },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
+  matchCount: { marginTop: spacing.sm },
   footer: { flexDirection: 'row', gap: spacing.md, paddingVertical: spacing.md },
   reset: { flex: 1 },
   apply: { flex: 2 },

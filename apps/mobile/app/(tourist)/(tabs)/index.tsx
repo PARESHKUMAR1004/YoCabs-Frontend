@@ -13,7 +13,7 @@ import { onlyHeadline } from '@/features/tourist/onlyChoice';
 import { useCurrentPickup } from '@/features/tourist/useCurrentPickup';
 import { MapCanvas, tripMarkers } from '@/shared/maps';
 import { placeProvider, type Place } from '@/shared/places';
-import { AppText, Button, ChoiceChips, DateField, Logo, Screen, Spacer } from '@/shared/ui';
+import { AppText, Button, ChoiceChips, DateField, Screen, Spacer } from '@/shared/ui';
 import { showInfo } from '@/shared/utils/feedback';
 import { toIsoDate } from '@/shared/utils/format';
 import { TRIP_TYPE_OPTIONS, VEHICLE_CATEGORY_OPTIONS } from '@/shared/utils/labels';
@@ -83,9 +83,9 @@ export default function Home() {
       }
     >
       <View style={styles.hero}>
-        <View style={styles.brand}>
-          <Logo />
-        </View>
+        <AppText variant="subheading" color="textOnPrimary" style={styles.brand}>
+          Book a ride
+        </AppText>
         <AppText variant="caption" color="primary" style={styles.greeting}>
           {greeting(new Date())}
         </AppText>
@@ -138,6 +138,21 @@ export default function Home() {
         </AppText>
       ) : null}
 
+      {!store.destination ? (
+        <View style={styles.suggestions}>
+          <AppText variant="caption" color="textMuted" style={styles.heading}>
+            {favourites.length ? 'Your favourites and popular places' : 'Popular places'}
+          </AppText>
+          {quickPicks.map((place) => (
+            <PlaceSuggestionRow
+              key={place.id}
+              place={place}
+              onChoose={(chosen) => store.setPlace('destination', chosen)}
+            />
+          ))}
+        </View>
+      ) : null}
+
       <TouristOffers />
 
       {store.only ? (
@@ -163,20 +178,7 @@ export default function Home() {
         <ExploreSection pickup={store.pickup} />
       ) : null}
 
-      {!store.destination ? (
-        <View style={styles.suggestions}>
-          <AppText variant="caption" color="textMuted" style={styles.heading}>
-            {favourites.length ? 'Your favourites and popular places' : 'Popular places'}
-          </AppText>
-          {quickPicks.map((place) => (
-            <PlaceSuggestionRow
-              key={place.id}
-              place={place}
-              onChoose={(chosen) => store.setPlace('destination', chosen)}
-            />
-          ))}
-        </View>
-      ) : (
+      {store.destination ? (
         <>
           {pins.length ? (
             <MapCanvas markers={pins} connect interactive={false} height={180} testID="trip-map" />
@@ -228,7 +230,7 @@ export default function Home() {
             Leave both unselected to compare every option.
           </AppText>
         </>
-      )}
+      ) : null}
     </Screen>
   );
 }
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     ...shadow.raised,
   },
-  brand: { marginBottom: spacing.lg },
+  brand: { marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 },
   greeting: { letterSpacing: 1.5, textTransform: 'uppercase' },
   heroTitle: { marginTop: spacing.xs, marginBottom: spacing.lg },
   location: {
@@ -278,6 +280,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   via: { marginTop: spacing.sm },
-  suggestions: { marginTop: spacing.lg },
+  suggestions: { marginTop: spacing.lg, marginBottom: spacing.lg },
   heading: { marginBottom: spacing.xs },
 });
