@@ -54,6 +54,12 @@ export interface Booking {
   reviewed: boolean;
 }
 
+/** A link to a trip's bill PDF, viewable with no sign-in; short-lived. */
+export interface InvoiceLink {
+  url: string;
+  expiresAt: IsoInstant;
+}
+
 export interface CreateBookingInput {
   tripRequestId: Uuid;
   vehicleId: Uuid;

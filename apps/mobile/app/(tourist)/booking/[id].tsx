@@ -1,9 +1,17 @@
+import { Linking, Share } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useBooking, useBookingPayments, useCancelBooking } from '@/features/tourist/hooks';
+import type { Booking } from '@yocabs/api-client';
+import {
+  useBooking,
+  useBookingPayments,
+  useCancelBooking,
+  useInvoiceLink,
+} from '@/features/tourist/hooks';
 import { BalanceCard } from '@/features/tourist/BalanceCard';
 import { FareTotal } from '@/features/tourist/FareTotal';
 import { isFollowable } from '@/features/tourist/followable';
 import { LiveTripMap } from '@/features/tourist/LiveTripMap';
+import { tripShareMessage } from '@/features/tourist/shareTrip';
 import { TripCodeCard } from '@/features/tourist/TripCodeCard';
 import {
   AppText,
@@ -33,6 +41,9 @@ export default function BookingDetail() {
   const query = useBooking(id);
   const payments = useBookingPayments(id);
   const cancel = useCancelBooking(id);
+  // Two separate mutations, so sharing the trip and viewing the bill each show their own spinner.
+  const shareLink = useInvoiceLink(id);
+  const viewLink = useInvoiceLink(id);
 
   const onCancel = async () => {
     const confirmed = await confirmAction(
@@ -44,6 +55,31 @@ export default function BookingDetail() {
     if (confirmed)
       cancel.mutate(undefined, { onError: (error) => showError(error, 'Could not cancel') });
   };
+
+  // WhatsApp, SMS, email, anything else the phone offers: the OS share sheet handles all of them.
+  const onShareTrip = async (booking: Booking) => {
+    let billUrl: string | undefined;
+
+    if (booking.status === 'COMPLETED') {
+      try {
+        billUrl = (await shareLink.mutateAsync()).url;
+      } catch {
+        // Sharing the trip is still worth doing even if the bill link could not be fetched.
+      }
+    }
+
+    try {
+      await Share.share({ message: tripShareMessage(booking, billUrl) });
+    } catch (error) {
+      showError(error, 'Could not share this trip');
+    }
+  };
+
+  const onViewBill = () =>
+    viewLink.mutate(undefined, {
+      onSuccess: (link) => void Linking.openURL(link.url),
+      onError: (error) => showError(error, 'Could not open the bill'),
+    });
 
   return (
     <QueryBoundary query={query}>
@@ -59,6 +95,12 @@ export default function BookingDetail() {
             />
           </Row>
           <AppText color="textMuted">{formatDateRange(booking.startDate, booking.endDate)}</AppText>
+          <Button
+            title="Share trip details"
+            variant="ghost"
+            loading={shareLink.isPending}
+            onPress={() => void onShareTrip(booking)}
+          />
           <Spacer />
 
           {booking.status === 'PENDING_PAYMENT' ? (
@@ -82,7 +124,17 @@ export default function BookingDetail() {
           ) : null}
 
           {booking.status === 'COMPLETED' ? (
-            <BalanceCard booking={booking} payments={payments.data ?? []} />
+            <>
+              <BalanceCard booking={booking} payments={payments.data ?? []} />
+              <Button
+                title="View bill"
+                variant="secondary"
+                loading={viewLink.isPending}
+                onPress={onViewBill}
+                testID="view-bill"
+              />
+              <Spacer size="sm" />
+            </>
           ) : null}
 
           {booking.tripCode ? (

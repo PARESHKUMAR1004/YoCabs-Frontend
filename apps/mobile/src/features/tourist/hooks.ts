@@ -186,3 +186,13 @@ export function useSubmitReview(bookingId: string) {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.tourist.booking(bookingId) }),
   });
 }
+
+/**
+ * A fresh, short-lived link to the trip's bill: only available once the trip is completed. A new
+ * one is asked for each time it is used, so it is never stale.
+ */
+export function useInvoiceLink(bookingId: string) {
+  return useMutation({
+    mutationFn: () => api.tourist.bookings.invoiceLink(bookingId),
+  });
+}

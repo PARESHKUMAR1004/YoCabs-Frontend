@@ -84,13 +84,17 @@ export function FilterSheet({
     <Modal transparent animationType="slide" visible={visible} onRequestClose={onClose}>
       <Pressable style={styles.scrim} onPress={onClose} accessibilityLabel="Close filters">
         <Pressable style={styles.sheet} onPress={() => undefined}>
-          <SafeAreaView edges={['bottom']}>
+          <SafeAreaView edges={['bottom']} style={styles.safeArea}>
             <View style={styles.handle} />
             <AppText variant="heading" style={styles.title}>
               Sort and filter
             </AppText>
 
-            <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+            <ScrollView
+              style={styles.scroll}
+              contentContainerStyle={styles.scrollContent}
+              showsVerticalScrollIndicator={false}
+            >
               <Group title="Sort by">
                 {SORTS.map((sort) => (
                   <Chip
@@ -209,6 +213,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     ...shadow.raised,
   },
+  // Fills the height the sheet is clamped to, so the ScrollView below has a real boundary to
+  // scroll within instead of just growing to fit every filter group.
+  safeArea: { flexShrink: 1 },
   handle: {
     alignSelf: 'center',
     width: 40,
@@ -219,7 +226,8 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   title: { marginBottom: spacing.sm },
-  scroll: { flexGrow: 0 },
+  scroll: { flexShrink: 1 },
+  scrollContent: { paddingBottom: spacing.sm },
   group: { marginBottom: spacing.lg },
   groupTitle: { textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: spacing.sm },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },

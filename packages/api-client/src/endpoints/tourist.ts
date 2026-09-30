@@ -1,6 +1,13 @@
 import type { HttpClient } from '../core/http';
 import { newId } from '../core/http';
-import type { Booking, CreateBookingInput, PartnerRating, Payment, Review } from '../types/booking';
+import type {
+  Booking,
+  CreateBookingInput,
+  InvoiceLink,
+  PartnerRating,
+  Payment,
+  Review,
+} from '../types/booking';
 import type { Uuid } from '../types/common';
 import type { ExplorePartner, ExplorePartnerDetail, ExplorePartnerVehicle } from '../types/explore';
 import type { Negotiation, NegotiationStatus } from '../types/negotiation';
@@ -84,6 +91,9 @@ export function createTouristApi(http: HttpClient) {
           path: `${API}/bookings/${id}/review`,
           body: { rating, comment },
         }),
+      /** A link to the bill PDF, viewable with no sign-in (a browser cannot carry the app's token). */
+      invoiceLink: (id: Uuid) =>
+        http.request<InvoiceLink>({ method: 'POST', path: `${API}/bookings/${id}/invoice-link` }),
     },
 
     payments: {
