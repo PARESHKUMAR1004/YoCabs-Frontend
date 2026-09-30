@@ -18,7 +18,8 @@ CLEAR = (0, 0, 0, 0)
 
 # ---------------------------------------------------------------- logo
 def mark(size, colour=GOLD, background=None, ring=True, scale=1.0):
-    """A ring and a bold "Y" whose arms open like a road forking. Drawn 4x and shrunk to smooth it."""
+    """A ring and a simple side-on cab silhouette, wheels and windows cut through to whatever
+    is behind. Drawn 4x and shrunk to smooth it."""
     big = size * 4
     image = Image.new('RGBA', (big, big), background or CLEAR)
     draw = ImageDraw.Draw(image)
@@ -33,20 +34,55 @@ def mark(size, colour=GOLD, background=None, ring=True, scale=1.0):
             outline=colour, width=width,
         )
 
-    stroke = int(big * 0.085 * scale)
-    top = centre - radius * 0.50
-    fork = centre - radius * 0.02
-    bottom = centre + radius * 0.52
-    spread = radius * 0.42
+    body_w = radius * 1.64
+    body_h = radius * 0.44
+    body_top = centre - radius * 0.05
+    body_bottom = body_top + body_h
+    body_left = centre - body_w / 2
+    body_right = centre + body_w / 2
 
-    def line(a, b):
-        draw.line([a, b], fill=colour, width=stroke)
-        for x, y in (a, b):
-            draw.ellipse([x - stroke / 2, y - stroke / 2, x + stroke / 2, y + stroke / 2], fill=colour)
+    cabin_w = body_w * 0.54
+    cabin_h = body_h * 1.05
+    cabin_left = centre - cabin_w / 2
+    cabin_right = centre + cabin_w / 2
+    cabin_top = body_top - cabin_h * 0.72
+    cabin_bottom = body_top + body_h * 0.22
 
-    line((centre - spread, top), (centre, fork))
-    line((centre + spread, top), (centre, fork))
-    line((centre, fork), (centre, bottom))
+    # cabin, drawn first so the body's straight top edge overlaps its base seamlessly
+    draw.rounded_rectangle(
+        [cabin_left, cabin_top, cabin_right, cabin_bottom],
+        radius=cabin_h * 0.42, fill=colour,
+    )
+
+    # body
+    draw.rounded_rectangle(
+        [body_left, body_top, body_right, body_bottom],
+        radius=body_h * 0.48, fill=colour,
+    )
+
+    # windows, cut through the cabin
+    window_h = (cabin_bottom - cabin_top) * 0.44
+    window_top = cabin_top + (cabin_bottom - cabin_top) * 0.24
+    gap = cabin_w * 0.12
+    win_w = (cabin_w - gap * 3) / 2
+    for wx in (cabin_left + gap, cabin_right - gap - win_w):
+        draw.rounded_rectangle(
+            [wx, window_top, wx + win_w, window_top + window_h],
+            radius=window_h * 0.28, fill=CLEAR,
+        )
+
+    # wheels, straddling the body's bottom edge
+    wheel_r = body_h * 0.56
+    for wx in (body_left + body_w * 0.24, body_right - body_w * 0.24):
+        draw.ellipse(
+            [wx - wheel_r, body_bottom - wheel_r, wx + wheel_r, body_bottom + wheel_r],
+            fill=colour,
+        )
+        hub_r = wheel_r * 0.4
+        draw.ellipse(
+            [wx - hub_r, body_bottom - hub_r, wx + hub_r, body_bottom + hub_r],
+            fill=CLEAR,
+        )
 
     return image.resize((size, size), Image.LANCZOS)
 
