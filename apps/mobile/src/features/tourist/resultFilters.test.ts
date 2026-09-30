@@ -6,6 +6,7 @@ import {
   DEFAULT_FILTERS,
   facilitiesIn,
   priceLimits,
+  standardFaresIn,
 } from './resultFilters';
 
 const option = (
@@ -21,6 +22,7 @@ const option = (
     reviewCount: 0,
     facilities: [],
     price: { totalAmount: total },
+    standardAmount: null,
     ...extra,
   }) as SearchOption;
 
@@ -117,5 +119,32 @@ describe('what the results offer to filter by', () => {
   it('lists the facilities and vehicle types actually present', () => {
     expect(facilitiesIn(options).map((f) => f.code)).toEqual(['AC']);
     expect(categoriesIn(options)).toEqual(['MUV', 'SEDAN', 'SUV']);
+  });
+});
+
+describe('standardFaresIn', () => {
+  const priced = (id: string, category: SearchOption['category'], standardAmount: number | null) =>
+    option(id, 1000, {
+      category,
+      standardAmount,
+      price: { totalAmount: 1000, currency: 'INR' },
+    } as never);
+
+  it('gives one fare per category, ignoring categories with no admin rate', () => {
+    const result = standardFaresIn([
+      priced('a', 'SEDAN', 950),
+      priced('b', 'SUV', 1600),
+      priced('c', 'SEDAN', 950), // a second Sedan does not duplicate the row
+      priced('d', 'MUV', null), // MUV has no admin rate yet
+    ]);
+
+    expect(result).toEqual([
+      { category: 'SEDAN', amount: 950, currency: 'INR' },
+      { category: 'SUV', amount: 1600, currency: 'INR' },
+    ]);
+  });
+
+  it('is empty when nothing has a standard rate', () => {
+    expect(standardFaresIn(options)).toEqual([]);
   });
 });

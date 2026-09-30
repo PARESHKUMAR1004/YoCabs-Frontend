@@ -13,12 +13,14 @@ import {
   activeFilterCount,
   applyFilters,
   DEFAULT_FILTERS,
+  standardFaresIn,
   type ResultFilters,
 } from '@/features/tourist/resultFilters';
 import { toSearchRequest, validateDraft } from '@/features/tourist/searchDraft';
 import { selectDraft, useSearchStore } from '@/features/tourist/searchStore';
 import { AppText, Button, EmptyState, QueryBoundary, Row } from '@/shared/ui';
-import { formatDateRange, formatDistance, formatDuration } from '@/shared/utils/format';
+import { formatDateRange, formatDistance, formatDuration, formatMoney } from '@/shared/utils/format';
+import { categoryLabel } from '@/shared/utils/labels';
 
 export default function Results() {
   // selectDraft builds a new object each call; useShallow keeps the result stable between renders.
@@ -41,6 +43,7 @@ export default function Results() {
 
   const options = useMemo(() => applyFilters(scoped, filters), [scoped, filters]);
   const filterCount = activeFilterCount(filters);
+  const standards = useMemo(() => standardFaresIn(scoped), [scoped]);
 
   if (!ready) {
     return (
@@ -89,6 +92,16 @@ export default function Results() {
                   <AppText variant="small" style={styles.tripDate}>
                     {formatDateRange(draft.startDate, draft.endDate)}
                   </AppText>
+                  {standards.length > 0 ? (
+                    <AppText variant="small" style={styles.standardFare}>
+                      YoCabs standard:{' '}
+                      {standards
+                        .map(
+                          (fare) => `${categoryLabel(fare.category)} ${formatMoney(fare.amount, fare.currency)}`,
+                        )
+                        .join(' · ')}
+                    </AppText>
+                  ) : null}
                 </View>
 
                 {only ? (
@@ -189,6 +202,7 @@ const styles = StyleSheet.create({
   },
   tripDate: { color: '#B9B3A5' },
   summary: { marginVertical: spacing.xs },
+  standardFare: { color: colors.primary, marginTop: spacing.xs },
   only: {
     backgroundColor: colors.primarySoft,
     borderRadius: radius.md,

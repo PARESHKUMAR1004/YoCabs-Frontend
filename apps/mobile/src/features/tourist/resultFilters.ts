@@ -80,3 +80,29 @@ export function facilitiesIn(options: SearchOption[]): FacilityRef[] {
 export function categoriesIn(options: SearchOption[]): VehicleCategory[] {
   return [...new Set(options.map((option) => option.category))].sort();
 }
+
+export interface StandardFare {
+  category: VehicleCategory;
+  amount: number;
+  currency: string;
+}
+
+/**
+ * The admin-set YoCabs standard fare for each vehicle type present in the results, one per
+ * category, in a stable order. A category with no admin rate set is left out entirely.
+ */
+export function standardFaresIn(options: SearchOption[]): StandardFare[] {
+  const byCategory = new Map<VehicleCategory, StandardFare>();
+
+  for (const option of options) {
+    if (option.standardAmount !== null && !byCategory.has(option.category)) {
+      byCategory.set(option.category, {
+        category: option.category,
+        amount: option.standardAmount,
+        currency: option.price.currency,
+      });
+    }
+  }
+
+  return [...byCategory.values()].sort((a, b) => a.category.localeCompare(b.category));
+}
