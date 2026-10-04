@@ -3,6 +3,7 @@ import type { Uuid } from '../types/common';
 import type {
   DocumentOwnerType,
   DocumentRecord,
+  PopularPlace,
   StandardRate,
   UploadDocumentInput,
 } from '../types/fleet';
@@ -14,6 +15,13 @@ const API = '/api/v1';
 export function createStandardRatesApi(http: HttpClient) {
   return {
     list: () => http.request<StandardRate[]>({ path: '/api/v1/standard-rates', auth: false }),
+  };
+}
+
+/** Admin-curated quick picks for the home screen: public, so the app can show them unsigned-in. */
+export function createPopularPlacesApi(http: HttpClient) {
+  return {
+    list: () => http.request<PopularPlace[]>({ path: '/api/v1/popular-places', auth: false }),
   };
 }
 

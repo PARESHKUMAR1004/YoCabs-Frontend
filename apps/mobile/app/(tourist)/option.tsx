@@ -18,7 +18,7 @@ import {
   SectionHeader,
 } from '@/shared/ui';
 import { humanize } from '@/shared/utils/format';
-import { categoryLabel, tripTypeLabel } from '@/shared/utils/labels';
+import { categoryLabel, facilityIcon, tripTypeLabel } from '@/shared/utils/labels';
 
 export default function OptionDetails() {
   const option = useBookingFlow((state) => state.option);
@@ -86,7 +86,12 @@ export default function OptionDetails() {
           <SectionHeader title="Includes" />
           <Row style={styles.facilities}>
             {option.facilities.map((facility) => (
-              <Badge key={facility.code} label={facility.name} tone="success" />
+              <Badge
+                key={facility.code}
+                label={facility.name}
+                tone="success"
+                icon={facilityIcon(facility.code)}
+              />
             ))}
           </Row>
         </>

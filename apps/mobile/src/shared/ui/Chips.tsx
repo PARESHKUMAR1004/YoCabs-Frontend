@@ -1,6 +1,16 @@
+import type { ComponentProps } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, radius, spacing } from '@/config/brand';
 import { AppText } from './Text';
+
+const TONE_COLORS = {
+  neutral: colors.textMuted,
+  success: colors.success,
+  warning: colors.warning,
+  danger: colors.danger,
+  info: colors.info,
+} as const;
 
 interface ChipProps {
   label: string;
@@ -65,9 +75,11 @@ export function ChoiceChips<T extends string>({
 export function Badge({
   label,
   tone = 'neutral',
+  icon,
 }: {
   label: string;
   tone?: 'neutral' | 'success' | 'warning' | 'danger' | 'info';
+  icon?: ComponentProps<typeof Ionicons>['name'];
 }) {
   const tones = {
     neutral: { bg: colors.surface, fg: 'textMuted' },
@@ -79,7 +91,8 @@ export function Badge({
   const look = tones[tone];
 
   return (
-    <View style={[styles.badge, { backgroundColor: look.bg }]}>
+    <View style={[styles.badge, icon ? styles.badgeWithIcon : null, { backgroundColor: look.bg }]}>
+      {icon ? <Ionicons name={icon} size={13} color={TONE_COLORS[tone]} /> : null}
       <AppText variant="caption" color={look.fg}>
         {label}
       </AppText>
@@ -105,4 +118,5 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: radius.pill,
   },
+  badgeWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 4 },
 });

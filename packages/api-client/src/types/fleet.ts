@@ -10,6 +10,25 @@ export interface StandardRate {
   updatedAt: IsoInstant;
 }
 
+/** A destination an admin has curated as a quick pick on the tourist home screen. */
+export interface PopularPlace {
+  id: Uuid;
+  name: string;
+  subtitle: string | null;
+  latitude: number;
+  longitude: number;
+  displayOrder: number;
+  updatedAt: IsoInstant;
+}
+
+export interface PopularPlaceInput {
+  name: string;
+  subtitle: string | null;
+  latitude: number;
+  longitude: number;
+  displayOrder: number;
+}
+
 /** The ground one vehicle covers. Areas belong to the vehicle, not the partner. */
 export interface ServiceArea {
   id: Uuid;

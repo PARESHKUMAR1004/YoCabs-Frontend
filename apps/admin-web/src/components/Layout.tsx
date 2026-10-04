@@ -14,6 +14,7 @@ const LINKS = [
   { to: '/support', label: 'Support' },
   { to: '/facilities', label: 'Facilities' },
   { to: '/standard-rates', label: 'Standard rates' },
+  { to: '/popular-places', label: 'Popular places' },
   { to: '/audit', label: 'Audit log' },
 ];
 

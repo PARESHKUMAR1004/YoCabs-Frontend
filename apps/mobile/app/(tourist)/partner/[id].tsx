@@ -18,7 +18,7 @@ import {
   Row,
   Screen,
 } from '@/shared/ui';
-import { categoryLabel } from '@/shared/utils/labels';
+import { categoryLabel, facilityIcon } from '@/shared/utils/labels';
 
 function VehicleCard({ vehicle, onBook }: { vehicle: ExploreVehicle; onBook: () => void }) {
   const photo = vehicle.photos[0];
@@ -41,7 +41,7 @@ function VehicleCard({ vehicle, onBook }: { vehicle: ExploreVehicle; onBook: () 
       {vehicle.facilities.length > 0 ? (
         <Row style={styles.facilities}>
           {vehicle.facilities.slice(0, 3).map((facility) => (
-            <Badge key={facility.code} label={facility.name} />
+            <Badge key={facility.code} label={facility.name} icon={facilityIcon(facility.code)} />
           ))}
           {vehicle.facilities.length > 3 ? (
             <Badge label={`+${vehicle.facilities.length - 3}`} />

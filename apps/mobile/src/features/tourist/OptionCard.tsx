@@ -5,7 +5,7 @@ import { colors, radius, spacing } from '@/config/brand';
 import { api } from '@/shared/api/client';
 import { AppText, Badge, Card, RatingBadge, Row } from '@/shared/ui';
 import { formatMoney } from '@/shared/utils/format';
-import { categoryLabel, tripTypeLabel } from '@/shared/utils/labels';
+import { categoryLabel, facilityIcon, tripTypeLabel } from '@/shared/utils/labels';
 import { compareToStandard } from './standardRateCompare';
 
 /** One comparable result: the car first, then who runs it and what it costs. */
@@ -41,7 +41,7 @@ export function OptionCard({ option, onPress }: { option: SearchOption; onPress:
       <Row style={styles.between}>
         <Row style={styles.facilities}>
           {option.facilities.slice(0, 2).map((facility) => (
-            <Badge key={facility.code} label={facility.name} />
+            <Badge key={facility.code} label={facility.name} icon={facilityIcon(facility.code)} />
           ))}
           {option.facilities.length > 2 ? (
             <Badge label={`+${option.facilities.length - 2}`} />

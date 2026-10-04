@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { colors, radius, shadow, spacing } from '@/config/brand';
 import { useFavouritePlaces } from '@/features/tourist/favouritePlaces';
+import { usePopularPlaces } from '@/features/tourist/usePopularPlaces';
 import { PlaceSuggestionRow } from '@/features/tourist/PlaceSuggestionRow';
 import { selectDraft, useSearchStore, type PlaceField } from '@/features/tourist/searchStore';
 import { validateDraft } from '@/features/tourist/searchDraft';
@@ -12,8 +13,8 @@ import { TouristOffers } from '@/features/negotiation/TouristOffers';
 import { onlyHeadline } from '@/features/tourist/onlyChoice';
 import { useCurrentPickup } from '@/features/tourist/useCurrentPickup';
 import { MapCanvas, tripMarkers } from '@/shared/maps';
-import { placeProvider, type Place } from '@/shared/places';
-import { AppText, Button, ChoiceChips, DateField, Screen, Spacer } from '@/shared/ui';
+import type { Place } from '@/shared/places';
+import { AppText, Button, ChoiceChips, DateField, Row, Screen, Spacer } from '@/shared/ui';
 import { showInfo } from '@/shared/utils/feedback';
 import { toIsoDate } from '@/shared/utils/format';
 import { TRIP_TYPE_OPTIONS, VEHICLE_CATEGORY_OPTIONS } from '@/shared/utils/labels';
@@ -30,6 +31,7 @@ export default function Home() {
   const store = useSearchStore();
   const favourites = useFavouritePlaces((state) => state.places);
   const hydrateFavourites = useFavouritePlaces((state) => state.hydrate);
+  const popularPlaces = usePopularPlaces();
   const today = toIsoDate(new Date());
   const locating = useCurrentPickup();
 
@@ -68,8 +70,7 @@ export default function Home() {
   const pins = tripMarkers(store.pickup, store.destination, store.stops);
   const quickPicks: Place[] = [
     ...favourites,
-    ...placeProvider
-      .popular()
+    ...popularPlaces
       .filter((place) => !favourites.some((saved) => saved.id === place.id))
       .slice(0, POPULAR_SHOWN),
   ];
@@ -83,15 +84,14 @@ export default function Home() {
       }
     >
       <View style={styles.hero}>
-        <AppText variant="subheading" color="textOnPrimary" style={styles.brand}>
-          Book a ride
-        </AppText>
-        <AppText variant="caption" color="primary" style={styles.greeting}>
-          {greeting(new Date())}
-        </AppText>
-        <AppText variant="title" color="textOnPrimary" style={styles.heroTitle}>
-          Where to next?
-        </AppText>
+        <Row style={styles.heroHeader}>
+          <AppText variant="subheading" color="textOnPrimary" style={styles.brand}>
+            Book a ride
+          </AppText>
+          <AppText variant="caption" color="primary" style={styles.greeting}>
+            {greeting(new Date())}
+          </AppText>
+        </Row>
 
         <Pressable
           accessibilityRole="button"
@@ -244,9 +244,9 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     ...shadow.raised,
   },
-  brand: { marginBottom: spacing.sm, textTransform: 'uppercase', letterSpacing: 1 },
+  heroHeader: { justifyContent: 'space-between', marginBottom: spacing.lg },
+  brand: { textTransform: 'uppercase', letterSpacing: 1 },
   greeting: { letterSpacing: 1.5, textTransform: 'uppercase' },
-  heroTitle: { marginTop: spacing.xs, marginBottom: spacing.lg },
   location: {
     flexDirection: 'row',
     alignItems: 'center',

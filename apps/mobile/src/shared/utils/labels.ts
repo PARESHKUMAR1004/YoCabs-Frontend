@@ -1,3 +1,5 @@
+import type { ComponentProps } from 'react';
+import type { Ionicons } from '@expo/vector-icons';
 import type {
   BookingStatus,
   NegotiationStatus,
@@ -6,6 +8,25 @@ import type {
   VehicleStatus,
 } from '@yocabs/api-client';
 import { humanize } from './format';
+
+type IoniconName = ComponentProps<typeof Ionicons>['name'];
+
+const FACILITY_ICONS: Record<string, IoniconName> = {
+  AC: 'snow-outline',
+  HEATER: 'flame-outline',
+  MUSIC_SYSTEM: 'musical-notes-outline',
+  SEAT_COVERS: 'car-sport-outline',
+  SANITIZED_CAB: 'sparkles-outline',
+  MOBILE_CHARGER: 'battery-charging-outline',
+  WATER_BOTTLE: 'water-outline',
+  FIRST_AID_KIT: 'medkit-outline',
+  EXTRA_LUGGAGE_SPACE: 'briefcase-outline',
+  TOLL_PARKING_INCLUDED: 'card-outline',
+  WIFI: 'wifi-outline',
+};
+
+/** A facility an admin added later with no mapped icon still gets a sensible generic one. */
+export const facilityIcon = (code: string): IoniconName => FACILITY_ICONS[code] ?? 'checkmark-circle-outline';
 
 export type Tone = 'neutral' | 'success' | 'warning' | 'danger' | 'info';
 

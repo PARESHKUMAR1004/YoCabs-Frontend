@@ -12,6 +12,7 @@ import { LiveTripsPage } from './pages/LiveTripsPage';
 import { LoginPage } from './pages/LoginPage';
 import { PartnersPage } from './pages/PartnersPage';
 import { PayoutsPage } from './pages/PayoutsPage';
+import { PopularPlacesPage } from './pages/PopularPlacesPage';
 import { StandardRatesPage } from './pages/StandardRatesPage';
 import { SupportPage } from './pages/SupportPage';
 import { UsersPage } from './pages/UsersPage';
@@ -36,6 +37,7 @@ export function App() {
         <Route path="/support" element={<SupportPage />} />
         <Route path="/facilities" element={<FacilitiesPage />} />
         <Route path="/standard-rates" element={<StandardRatesPage />} />
+        <Route path="/popular-places" element={<PopularPlacesPage />} />
         <Route path="/audit" element={<AuditLogsPage />} />
         {isSuperAdmin ? <Route path="/admins" element={<AdminsPage />} /> : null}
         <Route path="*" element={<Navigate to="/" replace />} />

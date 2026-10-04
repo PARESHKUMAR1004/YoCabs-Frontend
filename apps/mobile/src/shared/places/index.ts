@@ -4,7 +4,7 @@ import { staticPlaceProvider } from './staticProvider';
 import type { Place, PlaceProvider } from './types';
 
 export type { Place, PlaceProvider } from './types';
-export { ODISHA_PLACES } from './staticProvider';
+export { ODISHA_PLACES, staticPlaceProvider } from './staticProvider';
 
 /** Built-in places first, then online results; an online failure never breaks the picker. */
 export function createHybridPlaceProvider(online: PlaceProvider): PlaceProvider {

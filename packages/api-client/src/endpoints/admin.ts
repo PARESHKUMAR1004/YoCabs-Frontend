@@ -10,7 +10,14 @@ import type {
   PaymentsView,
   RefundsView,
 } from '../types/admin';
-import type { DocumentRecord, Facility, PartnerStatus, StandardRate } from '../types/fleet';
+import type {
+  DocumentRecord,
+  Facility,
+  PartnerStatus,
+  PopularPlace,
+  PopularPlaceInput,
+  StandardRate,
+} from '../types/fleet';
 import type { Payout, TicketSummary, TicketStatus } from '../types/operations';
 import type { LiveTrip } from '../types/tracking';
 
@@ -165,6 +172,23 @@ export function createAdminApi(http: HttpClient) {
           path: `${ADMIN}/standard-rates/${category}`,
           body: { perKmRate },
         }),
+    },
+
+    popularPlaces: {
+      create: (input: PopularPlaceInput) =>
+        http.request<PopularPlace>({
+          method: 'POST',
+          path: `${ADMIN}/popular-places`,
+          body: input,
+        }),
+      update: (id: Uuid, input: PopularPlaceInput) =>
+        http.request<PopularPlace>({
+          method: 'PUT',
+          path: `${ADMIN}/popular-places/${id}`,
+          body: input,
+        }),
+      remove: (id: Uuid) =>
+        http.request<void>({ method: 'DELETE', path: `${ADMIN}/popular-places/${id}` }),
     },
 
     /** Every trip on the road across the marketplace, for the live map. */

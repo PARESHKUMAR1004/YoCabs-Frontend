@@ -12,6 +12,7 @@ export const keys = {
     detail: (id: string) => ['support', 'detail', id] as const,
   },
   documents: (ownerType: string, ownerId: string) => ['documents', ownerType, ownerId] as const,
+  popularPlaces: () => ['popular-places'] as const,
   explore: {
     partners: (latitude: number, longitude: number) =>
       ['explore', 'partners', latitude, longitude] as const,

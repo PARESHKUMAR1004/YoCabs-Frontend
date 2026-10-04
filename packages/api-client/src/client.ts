@@ -5,6 +5,7 @@ import { createDriverApi, createPartnerApi } from './endpoints/partner';
 import {
   createDocumentsApi,
   createNotificationsApi,
+  createPopularPlacesApi,
   createStandardRatesApi,
   createSupportApi,
 } from './endpoints/shared';
@@ -22,6 +23,7 @@ export function createYoCabsClient(config: HttpConfig) {
     admin: createAdminApi(http),
     documents: createDocumentsApi(http),
     standardRates: createStandardRatesApi(http),
+    popularPlaces: createPopularPlacesApi(http),
     notifications: createNotificationsApi(http),
     support: createSupportApi(http),
     /** Turns a relative asset path from the API (vehicle photos) into a full URL. */
