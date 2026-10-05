@@ -21,6 +21,13 @@ const MARKER_ICON = L.icon({
 
 const DEFAULT_CENTER: [number, number] = [20.2961, 85.8245]; // Bhubaneswar
 
+// Every "free, no key" tile host (OpenStreetMap's own servers, CARTO's anonymous basemaps) ends up
+// blocking or gating embedded apps like this one sooner or later. MapTiler's free tier needs a key
+// but is meant for exactly this, and won't suddenly stop working. Sign up at maptiler.com and set
+// VITE_MAPTILER_API_KEY (as a Railway build variable for admin-web, since Vite bakes it in at
+// build time - see Dockerfile).
+const MAPTILER_KEY = import.meta.env.VITE_MAPTILER_API_KEY as string | undefined;
+
 interface DraftPlace {
   id: string | null;
   name: string;
@@ -110,27 +117,34 @@ export function PopularPlacesPage() {
       </Card>
 
       <Card title={draft.id ? 'Edit a place' : 'Add a place'}>
-        <div className="map-picker">
-          <MapContainer
-            center={[draft.latitude, draft.longitude]}
-            zoom={11}
-            style={{ height: 320, width: '100%', borderRadius: 8 }}
-          >
-            <TileLayer
-              // OpenStreetMap's own tile servers block third-party apps that don't register with
-              // them first (see osm.wiki/Blocked) - CARTO's free basemap tiles are meant for
-              // exactly this kind of embedded use and need no API key or registration.
-              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-              attribution="&copy; OpenStreetMap contributors &copy; CARTO"
-              subdomains="abcd"
-              maxZoom={19}
-            />
-            <PinPicker
-              position={[draft.latitude, draft.longitude]}
-              onPick={(latitude, longitude) => setDraft((d) => ({ ...d, latitude, longitude }))}
-            />
-          </MapContainer>
-        </div>
+        {MAPTILER_KEY ? (
+          <div className="map-picker">
+            <MapContainer
+              center={[draft.latitude, draft.longitude]}
+              zoom={11}
+              style={{ height: 320, width: '100%', borderRadius: 8 }}
+            >
+              <TileLayer
+                url={`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_KEY}`}
+                attribution="&copy; OpenStreetMap contributors &copy; MapTiler"
+                maxZoom={20}
+              />
+              <PinPicker
+                position={[draft.latitude, draft.longitude]}
+                onPick={(latitude, longitude) => setDraft((d) => ({ ...d, latitude, longitude }))}
+              />
+            </MapContainer>
+          </div>
+        ) : (
+          <p className="muted">
+            The map needs a free MapTiler API key to load. Sign up at{' '}
+            <a href="https://www.maptiler.com/" target="_blank" rel="noreferrer">
+              maptiler.com
+            </a>
+            , then set <code>VITE_MAPTILER_API_KEY</code> as a Railway variable for this service
+            and redeploy. Until then, type coordinates in manually below.
+          </p>
+        )}
 
         <form onSubmit={submit} className="inline-form">
           <input
@@ -151,6 +165,24 @@ export function PopularPlacesPage() {
             value={draft.displayOrder}
             onChange={(e) => setDraft((d) => ({ ...d, displayOrder: Number(e.target.value) || 0 }))}
             style={{ width: 80 }}
+          />
+          <input
+            type="number"
+            step="0.0001"
+            placeholder="Latitude"
+            title="Latitude (used when the map isn't available)"
+            value={draft.latitude}
+            onChange={(e) => setDraft((d) => ({ ...d, latitude: Number(e.target.value) || 0 }))}
+            style={{ width: 110 }}
+          />
+          <input
+            type="number"
+            step="0.0001"
+            placeholder="Longitude"
+            title="Longitude (used when the map isn't available)"
+            value={draft.longitude}
+            onChange={(e) => setDraft((d) => ({ ...d, longitude: Number(e.target.value) || 0 }))}
+            style={{ width: 110 }}
           />
           <button className="primary" disabled={saving}>
             {draft.id ? 'Save changes' : 'Add place'}

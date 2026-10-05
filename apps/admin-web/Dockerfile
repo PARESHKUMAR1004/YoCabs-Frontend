@@ -18,6 +18,12 @@ RUN npm ci -w @yocabs/admin-web --include-workspace-root --no-audit --no-fund
 
 COPY packages/api-client packages/api-client
 COPY apps/admin-web apps/admin-web
+
+# Baked into the built JS at this step (Vite replaces import.meta.env.VITE_* at build time, not
+# runtime), so it must come in as a build arg, not a container-start environment variable like
+# API_HOST/API_UPSTREAM below.
+ARG VITE_MAPTILER_API_KEY
+ENV VITE_MAPTILER_API_KEY=$VITE_MAPTILER_API_KEY
 RUN npm run build -w @yocabs/admin-web
 
 FROM nginx:1.27-alpine
