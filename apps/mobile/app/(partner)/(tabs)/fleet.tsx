@@ -1,7 +1,9 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { FlatList, StyleSheet } from 'react-native';
-import { spacing } from '@/config/brand';
+import { FlatList, Image, StyleSheet, View } from 'react-native';
+import { colors, radius, spacing } from '@/config/brand';
 import { useVehicles } from '@/features/partner/hooks';
+import { api } from '@/shared/api/client';
 import { AppText, Badge, Button, Card, EmptyState, QueryBoundary, Row } from '@/shared/ui';
 import { categoryLabel, vehicleStatusTone } from '@/shared/utils/labels';
 import { humanize } from '@/shared/utils/format';
@@ -38,16 +40,27 @@ export default function Fleet() {
                 router.push({ pathname: '/(partner)/vehicle/[id]', params: { id: item.id } })
               }
             >
-              <Row style={styles.row}>
-                <AppText variant="subheading" style={styles.flex}>
-                  {item.make} {item.model}
-                </AppText>
-                <Badge label={humanize(item.status)} tone={vehicleStatusTone(item.status)} />
+              <Row style={styles.top}>
+                {item.photos[0] ? (
+                  <Image source={{ uri: api.assetUrl(item.photos[0]) }} style={styles.photo} resizeMode="cover" />
+                ) : (
+                  <View style={[styles.photo, styles.noPhoto]}>
+                    <Ionicons name="car-sport" size={22} color={colors.primary} />
+                  </View>
+                )}
+                <View style={styles.flex}>
+                  <Row style={styles.row}>
+                    <AppText variant="subheading" style={styles.flex}>
+                      {item.make} {item.model}
+                    </AppText>
+                    <Badge label={humanize(item.status)} tone={vehicleStatusTone(item.status)} />
+                  </Row>
+                  <AppText color="textMuted">
+                    {item.registrationNumber} · {categoryLabel(item.category)} ·{' '}
+                    {item.passengerCapacity} seats
+                  </AppText>
+                </View>
               </Row>
-              <AppText color="textMuted">
-                {item.registrationNumber} · {categoryLabel(item.category)} ·{' '}
-                {item.passengerCapacity} seats
-              </AppText>
             </Card>
           )}
         />
@@ -59,6 +72,9 @@ export default function Fleet() {
 const styles = StyleSheet.create({
   list: { padding: spacing.lg },
   header: { marginBottom: spacing.md },
+  top: { alignItems: 'flex-start', gap: spacing.md },
   row: { justifyContent: 'space-between', gap: spacing.sm },
   flex: { flex: 1 },
+  photo: { width: 56, height: 56, borderRadius: radius.md, backgroundColor: colors.surface },
+  noPhoto: { alignItems: 'center', justifyContent: 'center', backgroundColor: colors.ink },
 });

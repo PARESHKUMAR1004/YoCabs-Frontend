@@ -1,5 +1,5 @@
 import type { ExplorePartnerVehicle, VehicleCategory } from '@yocabs/api-client';
-import { modelKey } from '@/features/tourist/carModel';
+import { brandKey, modelKey } from '@/features/tourist/carModel';
 
 /** One car model available around the tourist, however many partners run it. */
 export interface CarModel {
@@ -48,4 +48,14 @@ export function groupCarsByModel(cars: ExplorePartnerVehicle[]): CarModel[] {
 /** The vehicle types that have at least one cab, in a steady order. */
 export function categoriesOfCars(cars: ExplorePartnerVehicle[]): VehicleCategory[] {
   return [...new Set(cars.map((car) => car.vehicle.category))].sort();
+}
+
+/** The brands (Maruti Suzuki, Honda, Toyota...) that have at least one cab nearby, A-Z. */
+export function brandsOfCars(cars: ExplorePartnerVehicle[]): string[] {
+  const byKey = new Map<string, string>();
+  for (const { vehicle } of cars) {
+    const key = brandKey(vehicle.make);
+    if (!byKey.has(key)) byKey.set(key, vehicle.make.trim());
+  }
+  return [...byKey.values()].sort((a, b) => a.localeCompare(b));
 }

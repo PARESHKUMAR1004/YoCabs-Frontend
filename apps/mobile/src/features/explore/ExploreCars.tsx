@@ -3,12 +3,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useMemo, useState } from 'react';
 import { Image, Pressable, StyleSheet, View } from 'react-native';
 import { colors, radius, shadow, spacing } from '@/config/brand';
-import { carName, modelKey } from '@/features/tourist/carModel';
+import { brandKey, carName, modelKey } from '@/features/tourist/carModel';
 import type { Place } from '@/shared/places';
 import { api } from '@/shared/api/client';
 import { AppText, ChoiceChips, LoadingView } from '@/shared/ui';
 import { categoryLabel } from '@/shared/utils/labels';
-import { categoriesOfCars, groupCarsByModel, type CarModel } from './carModels';
+import { brandsOfCars, categoriesOfCars, groupCarsByModel, type CarModel } from './carModels';
 import { useExploreVehicles } from './hooks';
 import { useBookFromExplore } from './useBookFromExplore';
 
@@ -53,13 +53,20 @@ export function ExploreCars({ pickup }: { pickup: Place | null }) {
   const query = useExploreVehicles(pickup);
   const book = useBookFromExplore();
   const [chosen, setChosen] = useState<VehicleCategory | undefined>();
+  const [chosenBrand, setChosenBrand] = useState<string | undefined>();
 
   const cars = useMemo(() => query.data ?? [], [query.data]);
   const categories = useMemo(() => categoriesOfCars(cars), [cars]);
   const category = chosen && categories.includes(chosen) ? chosen : categories[0];
+  const brands = useMemo(() => brandsOfCars(cars), [cars]);
   const models = useMemo(
-    () => groupCarsByModel(cars).filter((model) => model.category === category),
-    [cars, category],
+    () =>
+      groupCarsByModel(cars).filter(
+        (model) =>
+          model.category === category &&
+          (!chosenBrand || brandKey(model.make) === brandKey(chosenBrand)),
+      ),
+    [cars, category, chosenBrand],
   );
 
   if (query.isPending) {
@@ -90,6 +97,21 @@ export function ExploreCars({ pickup }: { pickup: Place | null }) {
         onChange={(value) => value && setChosen(value)}
       />
 
+      {brands.length > 1 ? (
+        <ChoiceChips
+          options={brands.map((value) => ({ value, label: value }))}
+          value={chosenBrand}
+          onChange={setChosenBrand}
+          allowClear
+        />
+      ) : null}
+
+      {models.length === 0 ? (
+        <AppText color="textMuted" style={styles.noBrandMatch}>
+          No {categoryLabel(category).toLowerCase()} from {chosenBrand} nearby. Try another brand.
+        </AppText>
+      ) : null}
+
       <View style={styles.grid}>
         {models.map((car) => (
           <ModelTile
@@ -107,6 +129,7 @@ export function ExploreCars({ pickup }: { pickup: Place | null }) {
 
 const styles = StyleSheet.create({
   status: { height: 120 },
+  noBrandMatch: { marginTop: spacing.md },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md, marginTop: spacing.md },
   tile: {
     width: '47.5%',

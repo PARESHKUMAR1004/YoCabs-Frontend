@@ -137,7 +137,7 @@ export default function BookingDetail() {
             </>
           ) : null}
 
-          {booking.tripCode ? (
+          {booking.tripCode && (booking.status === 'CONFIRMED' || booking.status === 'IN_PROGRESS') ? (
             <>
               <TripCodeCard code={booking.tripCode} />
               <Spacer size="sm" />

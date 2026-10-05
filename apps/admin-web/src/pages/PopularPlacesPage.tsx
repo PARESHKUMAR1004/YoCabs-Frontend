@@ -117,8 +117,13 @@ export function PopularPlacesPage() {
             style={{ height: 320, width: '100%', borderRadius: 8 }}
           >
             <TileLayer
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              attribution="&copy; OpenStreetMap contributors"
+              // OpenStreetMap's own tile servers block third-party apps that don't register with
+              // them first (see osm.wiki/Blocked) - CARTO's free basemap tiles are meant for
+              // exactly this kind of embedded use and need no API key or registration.
+              url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+              attribution="&copy; OpenStreetMap contributors &copy; CARTO"
+              subdomains="abcd"
+              maxZoom={19}
             />
             <PinPicker
               position={[draft.latitude, draft.longitude]}

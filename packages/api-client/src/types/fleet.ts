@@ -65,6 +65,8 @@ export interface Vehicle {
   status: VehicleStatus;
   /** Pickups inside any of these put this vehicle in a traveller's search results. */
   serviceAreas: ServiceArea[];
+  /** Approved photos only; empty until at least one has been uploaded and approved. */
+  photos: string[];
   createdAt: IsoInstant;
   updatedAt: IsoInstant;
 }

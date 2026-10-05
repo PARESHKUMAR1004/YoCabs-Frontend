@@ -1,5 +1,5 @@
 import type { ExplorePartnerVehicle } from '@yocabs/api-client';
-import { categoriesOfCars, groupCarsByModel } from './carModels';
+import { brandsOfCars, categoriesOfCars, groupCarsByModel } from './carModels';
 
 const car = (
   partnerId: string,
@@ -54,5 +54,20 @@ describe('groupCarsByModel', () => {
 describe('categoriesOfCars', () => {
   it('lists each vehicle type once', () => {
     expect(categoriesOfCars(cars)).toEqual(['SEDAN', 'SUV']);
+  });
+});
+
+describe('brandsOfCars', () => {
+  it('lists each brand once, A-Z, treating spelling variants as one', () => {
+    // 'Maruti Suzuki' and 'Maruti' are two different brand spellings in the fixture, so both show.
+    expect(brandsOfCars(cars)).toEqual(['Honda', 'Hyundai', 'Mahindra', 'Maruti', 'Maruti Suzuki']);
+  });
+
+  it('treats case and spacing variants of the same brand as one', () => {
+    const toyota = [
+      car('a', 'Toyota', 'Innova', 'SUV'),
+      car('b', ' toyota ', 'Fortuner', 'SUV'),
+    ];
+    expect(brandsOfCars(toyota)).toEqual(['Toyota']);
   });
 });
