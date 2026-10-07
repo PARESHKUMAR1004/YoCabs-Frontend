@@ -7,7 +7,7 @@ import { useAction } from '../hooks';
 
 const KEY = ['standard-rates'];
 
-const CATEGORIES: VehicleCategory[] = ['SEDAN', 'SUV', 'MUV', 'TEMPO_TRAVELLER', 'BUS'];
+const CATEGORIES: VehicleCategory[] = ['MINI', 'SEDAN', 'SUV', 'MUV', 'LUXURY', 'TEMPO_TRAVELLER', 'BUS'];
 
 export function StandardRatesPage() {
   const query = useQuery({ queryKey: KEY, queryFn: () => api.standardRates.list() });

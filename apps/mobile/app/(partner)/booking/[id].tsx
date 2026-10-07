@@ -22,7 +22,7 @@ import {
 } from '@/shared/ui';
 import { isFollowable } from '@/features/tourist/followable';
 import { TripCodeEntry } from '@/features/trip/TripCodeEntry';
-import { confirmAction, showError } from '@/shared/utils/feedback';
+import { showError } from '@/shared/utils/feedback';
 import { formatDateRange, formatDateTime, formatMoney, toIsoDate } from '@/shared/utils/format';
 import { bookingStatusLabel, bookingStatusTone, tripTypeLabel } from '@/shared/utils/labels';
 
@@ -35,24 +35,11 @@ export default function PartnerBookingDetail() {
   const following = query.data ? isFollowable(query.data, toIsoDate(new Date())) : false;
   const live = useTripLocation(id, following);
 
-  const run = (name: 'assignDriver' | 'start' | 'complete' | 'cancel', value?: string) =>
+  const run = (name: 'assignDriver' | 'start' | 'complete', value?: string) =>
     action.mutate(
       { action: name, value },
       { onError: (error) => showError(error, 'That did not work') },
     );
-
-  const onCancel = async () => {
-    if (
-      await confirmAction(
-        'Cancel this booking?',
-        'The traveller will be refunded per the cancellation policy.',
-        'Cancel booking',
-        true,
-      )
-    ) {
-      run('cancel', 'Cancelled by travel partner');
-    }
-  };
 
   return (
     <QueryBoundary query={query}>
@@ -129,7 +116,7 @@ export default function PartnerBookingDetail() {
               </>
             ) : null}
 
-            {booking.tourist ? (
+            {booking.tourist && booking.status !== 'CANCELLED' ? (
               <>
                 <SectionHeader title="Traveller" />
                 <Card>
@@ -184,12 +171,6 @@ export default function PartnerBookingDetail() {
                 loading={action.isPending}
                 onPress={() => run('complete')}
               />
-            ) : null}
-            {booking.status === 'CONFIRMED' ? (
-              <>
-                <Spacer size="sm" />
-                <Button title="Cancel booking" variant="danger" onPress={() => void onCancel()} />
-              </>
             ) : null}
           </Screen>
         );

@@ -5,7 +5,7 @@ import { AppText, Badge, Button, Card, FormTextField, Row, Spacer } from '@/shar
 import { showError, showInfo } from '@/shared/utils/feedback';
 import { tripTypeLabel } from '@/shared/utils/labels';
 import { useSavePricing, useSetPricingActive } from './hooks';
-import { PRICING_FIELDS, PRICING_FIELD_LABELS, pricingDefaults } from './pricingFields';
+import { PRICING_FIELDS, PRICING_FIELD_LABELS, pricingDefaults, toPricingInput } from './pricingFields';
 import { pricingSchema, type PricingForm, type PricingValues } from './schemas';
 
 interface Props {
@@ -26,11 +26,11 @@ export function PricingEditor({ vehicleId, tripType, existing }: Props) {
   const fields = PRICING_FIELDS[tripType];
 
   const onSave = handleSubmit((values) => {
-    const input: PricingConfigurationInput = { vehicleId, tripType };
-    for (const field of fields) {
-      const value = values[field];
-      if (value !== undefined) input[field] = value;
-    }
+    const input: PricingConfigurationInput = {
+      vehicleId,
+      tripType,
+      ...toPricingInput(fields, values),
+    };
     save.mutate(
       { id: existing?.id, input },
       {

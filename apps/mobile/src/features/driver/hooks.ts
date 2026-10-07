@@ -27,3 +27,14 @@ export function useTripAction(id: string) {
     },
   });
 }
+
+/** The trip is refetched on success so `balanceSettled`/`touristRated` reflect the new rating. */
+export function useSubmitTouristFeedback(id: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ rating, comment }: { rating: number; comment?: string }) =>
+      api.driver.submitFeedback(id, rating, comment),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: keys.driver.trip(id) }),
+  });
+}

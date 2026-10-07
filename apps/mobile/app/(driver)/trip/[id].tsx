@@ -84,7 +84,7 @@ export default function DriverTrip() {
             ) : null}
           </Card>
 
-          {trip.tourist ? (
+          {trip.tourist && trip.status !== 'CANCELLED' ? (
             <>
               <SectionHeader title="Traveller" />
               <Card>
@@ -111,6 +111,25 @@ export default function DriverTrip() {
               testID="complete-trip"
             />
           ) : null}
+
+          {trip.status === 'COMPLETED' && !trip.balanceSettled ? (
+            <AppText color="textMuted" align="center">
+              Payment pending. If the traveller has already paid you directly, this will not
+              update - you can still rate them below once they have paid online.
+            </AppText>
+          ) : trip.status === 'COMPLETED' && !trip.touristRated ? (
+            <Button
+              title="Rate this traveller"
+              onPress={() =>
+                router.push({ pathname: '/(driver)/trip/feedback/[id]', params: { id: trip.id } })
+              }
+            />
+          ) : trip.status === 'COMPLETED' ? (
+            <AppText color="textMuted" align="center">
+              Thanks, you already rated this traveller.
+            </AppText>
+          ) : null}
+
           <Spacer size="sm" />
           <Button
             title="Report a problem"

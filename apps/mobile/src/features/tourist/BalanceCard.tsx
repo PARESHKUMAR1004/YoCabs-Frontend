@@ -1,21 +1,10 @@
 import type { Booking, Payment } from '@yocabs/api-client';
 import { paymentLauncher } from '@/features/payment/launcher';
 import { AppText, Button, Card } from '@/shared/ui';
+import { balanceDue, isBalancePaid } from '@/shared/utils/balance';
 import { showError } from '@/shared/utils/feedback';
 import { formatMoney } from '@/shared/utils/format';
 import { usePayBalance } from './hooks';
-
-/** What is still owed on a completed trip: the fare less the token already paid. */
-export const balanceDue = (booking: Booking) => booking.totalAmount - booking.tokenAmount;
-
-export const isBalancePaid = (payments: Payment[]) =>
-  payments.some(
-    (payment) =>
-      payment.purpose === 'BALANCE' &&
-      (payment.status === 'SUCCEEDED' ||
-        payment.status === 'PARTIALLY_REFUNDED' ||
-        payment.status === 'REFUNDED'),
-  );
 
 /**
  * Shown once the driver has completed the trip: pay what is left in the app, or settle it with

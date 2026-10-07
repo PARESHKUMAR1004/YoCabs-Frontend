@@ -98,7 +98,16 @@ export default function OptionDetails() {
       ) : null}
 
       <FareTotal total={option.price.totalAmount} currency={option.price.currency} />
-      {comparison ? <Badge label={comparison.label} tone={comparison.tone} /> : null}
+
+      {comparison ? (
+        <View style={styles.standardSection}>
+          <AppText variant="caption" color="textMuted">
+            Compared to YoCabs standard fare
+          </AppText>
+          <Badge label={comparison.label} tone={comparison.tone} />
+        </View>
+      ) : null}
+
       <AppText variant="small" color="textMuted">
         You pay only a small token now to confirm. You will not be charged until you confirm the
         booking.
@@ -112,5 +121,6 @@ const styles = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.md },
   meta: { justifyContent: 'space-between', marginBottom: spacing.sm },
   badges: { gap: spacing.sm, marginBottom: spacing.md },
-  facilities: { flexWrap: 'wrap', gap: spacing.sm },
+  facilities: { flexWrap: 'wrap', gap: spacing.sm, marginBottom: spacing.lg },
+  standardSection: { gap: spacing.xs, marginBottom: spacing.lg },
 });

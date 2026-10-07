@@ -9,7 +9,7 @@ export type Role =
 
 export type TripType = 'CHAUFFEUR_ONE_WAY' | 'CHAUFFEUR_ROUND_TRIP' | 'CHAUFFEUR_RENTAL';
 
-export type VehicleCategory = 'SEDAN' | 'SUV' | 'MUV' | 'TEMPO_TRAVELLER' | 'BUS';
+export type VehicleCategory = 'MINI' | 'SEDAN' | 'SUV' | 'MUV' | 'LUXURY' | 'TEMPO_TRAVELLER' | 'BUS';
 
 export interface Location {
   description: string;

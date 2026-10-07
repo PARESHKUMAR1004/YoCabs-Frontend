@@ -52,6 +52,14 @@ export interface Booking {
   tripCode: string | null;
   /** Tourist only: whether this completed trip has already been rated once. */
   reviewed: boolean;
+  /**
+   * Driver only, once COMPLETED. Whether the balance has been paid online - a tourist paying the
+   * driver directly (cash/UPI outside the app) is invisible to the API, so this can read false
+   * even when the driver has in fact already been paid in person.
+   */
+  balanceSettled: boolean;
+  /** Driver only, once COMPLETED. Whether the driver has already rated the traveller. */
+  touristRated: boolean;
 }
 
 /** A link to a trip's bill PDF, viewable with no sign-in; short-lived. */
@@ -87,6 +95,15 @@ export interface Payment {
 }
 
 export interface Review {
+  id: Uuid;
+  bookingId: Uuid;
+  rating: number;
+  comment: string | null;
+  createdAt: IsoInstant;
+}
+
+/** A driver's rating of the traveller: the reverse direction of Review, once a trip is paid up. */
+export interface TouristFeedback {
   id: Uuid;
   bookingId: Uuid;
   rating: number;

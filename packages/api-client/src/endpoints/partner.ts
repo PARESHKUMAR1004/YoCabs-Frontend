@@ -1,5 +1,5 @@
 import type { HttpClient, Query } from '../core/http';
-import type { Booking, BookingStatus, Review } from '../types/booking';
+import type { Booking, BookingStatus, Review, TouristFeedback } from '../types/booking';
 import type { DateRangeQuery, Uuid } from '../types/common';
 import type {
   Driver,
@@ -252,6 +252,14 @@ export function createDriverApi(http: HttpClient) {
         method: 'POST',
         path: `${API}/bookings/${bookingId}/location`,
         body: input,
+      }),
+
+    /** Only accepted once the trip is COMPLETED and its balance is settled (Booking.balanceSettled). */
+    submitFeedback: (bookingId: Uuid, rating: number, comment?: string) =>
+      http.request<TouristFeedback>({
+        method: 'POST',
+        path: `${API}/bookings/${bookingId}/tourist-feedback`,
+        body: { rating, comment },
       }),
   };
 }

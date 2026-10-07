@@ -13,7 +13,7 @@ export const vehicleSchema = z.object({
   ),
   make: requiredText('Make', 50),
   model: requiredText('Model', 50),
-  category: z.enum(['SEDAN', 'SUV', 'MUV', 'TEMPO_TRAVELLER', 'BUS']),
+  category: z.enum(['MINI', 'SEDAN', 'SUV', 'MUV', 'LUXURY', 'TEMPO_TRAVELLER', 'BUS']),
   passengerCapacity: wholeNumberInRange('Seats', 1, 60),
 });
 export type VehicleForm = z.input<typeof vehicleSchema>;
@@ -83,7 +83,7 @@ export const pricingSchema = z.object({
   perKmCharge: optionalPositiveNumber('Per-km charge'),
   driverAllowance: optionalPositiveNumber('Driver allowance'),
   minimumBillableKm: optionalPositiveNumber('Minimum km'),
-  includedDurationMinutes: optionalPositiveNumber('Included minutes'),
+  includedDurationHours: optionalPositiveNumber('Included hours'),
   includedDistanceKm: optionalPositiveNumber('Included km'),
   packagePrice: optionalPositiveNumber('Package price'),
   extraHourCharge: optionalPositiveNumber('Extra hour charge'),

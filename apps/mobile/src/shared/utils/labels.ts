@@ -37,9 +37,11 @@ export const TRIP_TYPE_OPTIONS: { value: TripType; label: string }[] = [
 ];
 
 export const VEHICLE_CATEGORY_OPTIONS: { value: VehicleCategory; label: string }[] = [
+  { value: 'MINI', label: 'Mini' },
   { value: 'SEDAN', label: 'Sedan' },
   { value: 'SUV', label: 'SUV' },
   { value: 'MUV', label: 'MUV' },
+  { value: 'LUXURY', label: 'Luxury' },
   { value: 'TEMPO_TRAVELLER', label: 'Tempo Traveller' },
   { value: 'BUS', label: 'Bus' },
 ];
