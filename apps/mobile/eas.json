@@ -40,8 +40,8 @@
       },
       "env": {
         "APP_ENV": "production",
-        "EXPO_PUBLIC_API_BASE_URL": "https://api.example.com",
-        "EXPO_PUBLIC_SANDBOX_PAYMENTS": "false"
+        "EXPO_PUBLIC_API_BASE_URL": "https://api-production-ce175.up.railway.app",
+        "EXPO_PUBLIC_SANDBOX_PAYMENTS": "true"
       }
     }
   },
