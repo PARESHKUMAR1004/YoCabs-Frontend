@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Downloaded build artifacts - never part of source, bloats the EAS upload archive if left here
+apps/mobile/build-output/
